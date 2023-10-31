@@ -73,7 +73,7 @@ object bocina {
 		sonido.volume(0)
 		sonido.play()
 		sonido.shouldLoop(true)
-		game.schedule(1900, {sonido.pause() sonido.volume(0.5)})
+		game.schedule(1900, {sonido.pause() sonido.volume(0.1)})
 	}
 	
 	method tocar() {

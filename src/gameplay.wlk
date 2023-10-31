@@ -5,7 +5,7 @@ import music.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = fondoJ + obstaculos + [auto, cartelContador, contador] ){
+	objetos = fondoJ + obstaculos + [auto, tormenta, cartelContador, contador] ){
 	
 	override method mostrar() {
 		super()
@@ -21,15 +21,30 @@ object juego inherits Pantalla (
 	}
 	
 	method empezarEventos() {
+		self.empezarEventosActualizables()
+		game.onTick(15000, "Generar tormenta", {tormenta.aparecer()})
+	}
+	
+	method terminarEventos() {
+		self.terminarEventosActualizables()
+		game.removeTickEvent("Generar tormenta")
+	}
+	
+	method empezarEventosActualizables() {
 		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza() fondoJuego.actualizar()})
 		game.onTick(auto.velocidad()/10, "Avanza contador", {contador.avanza()})
 		game.onTick(auto.velocidad() * 4, "Generar obstaculos", {generador.generarObstaculos()})
 		game.onTick(10000, "Aumentar velocidad", {auto.aumentarVelocidad()})
 	}
 	
-	method terminarEventos() {
+	method terminarEventosActualizables() {
 		const eventos = ["Avanza auto", "Avanza contador", "Generar obstaculos", "Aumentar velocidad"]
 		eventos.forEach{evento => game.removeTickEvent(evento)}
+	}
+	
+	method actualizarEventos() {
+		self.terminarEventosActualizables()
+		self.empezarEventosActualizables()
 	}
 	
 	// Teclado
@@ -120,15 +135,14 @@ object auto {
 	method aumentarVelocidad() {
 		if (velocidad > 60) {
 			velocidad = velocidad - 20
-			juego.terminarEventos()
-			juego.empezarEventos()
+			juego.actualizarEventos()
 		}
 	}
 	
 	method avanza() {(fondoJ + obstaculos).forEach{obj => obj.position(obj.position().down(1))}}
 }
 
-class Obstaculo {
+class ObjetoDeCalle {
 	var property image
 	var property position = game.at(15, 10)
 	const property posicionesPosibles
@@ -150,12 +164,12 @@ class Obstaculo {
 	}
 }
 
-class Inanimado inherits Obstaculo (
+class Inanimado inherits ObjetoDeCalle (
 	image = "celda.png",
 	posicionesPosibles = [5,6,7,8,9]
 ) {}
 
-class Vaca inherits Obstaculo (
+class Vaca inherits ObjetoDeCalle (
 	image = "vaca.png",
 	posicionesPosibles = [5,7,9] ) {
 	
@@ -180,6 +194,27 @@ class Vaca inherits Obstaculo (
 			else {position = position.right(1)}
 			carril = 0
 		}
+	}
+}
+
+class Moneda inherits ObjetoDeCalle {}
+
+object tormenta {
+	var property position = game.at(0, 10)
+	var property image = "tormenta.png"
+	
+	method aparecer() {
+		if (0.randomUpTo(1) < 0.34) {
+			position = game.at(0, 10)
+			game.onTick(100, "Aparece tormenta", {position = position.down(1)})
+			game.schedule(500, {game.removeTickEvent("Aparece tormenta")})
+			game.schedule(5500, {self.desaparecer()})
+		}
+	}
+	
+	method desaparecer() {
+		game.onTick(100, "Desaparece tormenta", {position = position.up(1)})
+		game.schedule(500, {game.removeTickEvent("Desaparece tormenta")})
 	}
 }
 
