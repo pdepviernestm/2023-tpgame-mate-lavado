@@ -45,4 +45,13 @@ describe "Tests de Teclado" {
 		tienda.down()
 		assert.notEquals(posInicialSeleccionador,seleccionador.position())
 	}
+	// test "Al seleccionar una tabla de la primera fila, Mate cambia su apariencia" 
+	// test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras"
+}
+
+describe "Tests de Obstáculos" {
+	
+	// Vacas
+	// Tormenta de arena
+	// Barriles
 }
