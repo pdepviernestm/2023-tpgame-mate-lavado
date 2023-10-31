@@ -1,4 +1,4 @@
-# Nombre del juego (<- borrar y completar)
+# Tow Mater
 
 ## Equipo de desarrollo
 
