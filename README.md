@@ -2,9 +2,11 @@
 
 ## Equipo de desarrollo
 
-- Alguien
-- Persona
-- etc.
+- Carbia, Gabriel
+- Rabey Fischer, María Sofía
+- Romero, Nicolás
+- Silva, Federico
+- Valmadre Amoia, Valentina
 
 ## Capturas
 
