@@ -1,0 +1,28 @@
+import visuals.*
+import wollok.game.*
+import keyboardSettings.*
+import music.*
+import intro.*
+import gameplay.*
+
+program ejecutarJuego {
+	
+	//	CONFIG
+	
+	game.cellSize(80)
+	game.title("Tow Mater")
+	game.width(15)
+  	game.height(10)
+  	
+  	// TECLADO
+  	
+  	teclado.configurate()
+  	
+  	// START
+  	
+	intro.mostrar()
+	auto.configurar()
+	game.schedule(1000, {bocina.iniciar()})
+	game.schedule(3000, {cambio.aMenu()})
+	game.start()
+}
