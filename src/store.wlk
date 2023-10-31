@@ -46,10 +46,9 @@ class Tabla {
 	var property position
 	var property image
 	const tablaComprada
-	const imagenAlternativa
 	
 	const precio
-	var property esAspecto
+	var property esAspecto = false
 	var property comprado = false
 	
 	method comprar() {
@@ -62,42 +61,43 @@ class Tabla {
 		}
 	}
 	
-	method efecto() {
+	method efecto()
+}
+
+class TablaDeAspecto inherits Tabla (esAspecto = true) {
+	const imagenAlternativa
+	
+	override method efecto() {
 		auto.image(imagenAlternativa)
 	}
 }
 
-const tabla1 = new Tabla (
+const tabla1 = new TablaDeAspecto (
 	position = game.at(1,5),
 	image = "Tabla1.png",
 	tablaComprada = "Tabla1comp.png",
 	precio = 15,
-	esAspecto = true,
-	imagenAlternativa = "mateConSombrero.png" )
+	imagenAlternativa = "mateSombrero.png" )
 	
-const tabla2 = new Tabla (
+const tabla2 = new TablaDeAspecto (
 	position = game.at(5,5),
 	image = "Tabla2.png",
 	tablaComprada = "Tabla2comp.png",
 	precio = 30,
-	esAspecto = true,
 	imagenAlternativa = "mateAzul.png" )
 
-const tabla3 = new Tabla (
+const tabla3 = new TablaDeAspecto (
 	position = game.at(9,5),
 	image = "Tabla3.png",
 	tablaComprada = "Tabla3comp.png",
 	precio = 100,
-	esAspecto = true,
 	imagenAlternativa = "rayoMcqueen.png" )
 
 object tabla4 inherits Tabla (
 	position = game.at(1,1),
 	image = "Tabla4.png",
 	tablaComprada = "Tabla4comp.png",
-	precio = 45,
-	esAspecto = false,
-	imagenAlternativa = "celda.png" ){
+	precio = 45 ){
 	override method efecto() {auto.luces(true)}
 }
 
@@ -105,9 +105,7 @@ object tabla5 inherits Tabla (
 	position = game.at(5,1),
 	image = "Tabla5.png",
 	tablaComprada = "Tabla5comp.png",
-	precio = 60,
-	esAspecto = false,
-	imagenAlternativa = "celda.png" ){
+	precio = 60 ){
 	override method efecto() {auto.aumentaAgilidad()}
 }
 
@@ -115,9 +113,7 @@ object tabla6 inherits Tabla (
 	position = game.at(9,1),
 	image = "Tabla6.png",
 	tablaComprada = "Tabla6comp.png",
-	precio = 75,
-	esAspecto = false,
-	imagenAlternativa = "celda.png" ){
+	precio = 75 ){
 	override method efecto() {auto.vidaExtra()}
 }
 

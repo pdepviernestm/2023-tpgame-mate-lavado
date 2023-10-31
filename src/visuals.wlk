@@ -35,10 +35,11 @@ object enPantalla {
 	var property hay = intro
 	method codigo() = hay.codigo()
 	/*
-	   0 = Intro / Transicion
+	   0 = Intro
 	   1 = Menu
 	   2 = Tienda
 	   3 = Juego
+	   4 = Transicion
 	 */
 	method cambiar(_hay) {hay = _hay} // Definido para que no de advertencia
 }
@@ -48,17 +49,18 @@ object enPantalla {
 object cambio {
 	method aMenu(){
 		enPantalla.hay().ocultar()
-		menu.mostrar()
 		if (enPantalla.codigo() == intro.codigo()) {musica.reproducir()}
-		if (enPantalla.codigo() == juego.codigo()) {musica.reanudar()}
+		else if (enPantalla.codigo() == juego.codigo()) {musica.reanudar()}
+		enPantalla.cambiar(estadoIntermedio)
+		menu.mostrar()
 		game.schedule(100, {enPantalla.cambiar(menu)})
 	}
 	
 	method desdeMenu(){
+		enPantalla.cambiar(estadoIntermedio)
 		if (puntero.apuntaA().codigo() == juego.codigo()) {
 			musica.pausar()
-			enPantalla.cambiar(intro)
-			transicion.mostrar()
+			transicion.realizar()
 		}
 		else {
 			menu.ocultar()
@@ -72,20 +74,34 @@ object transicion {
 	var property position = game.at(-15, 0)
 	method image() = "transicion.png"
 	
-	method mostrar() {
+	method realizar() {
 		game.addVisual(self)
 		game.onTick(25, "Transicion", {position = position.right(1)})
-		game.schedule(500, {
+		game.schedule(25 * 20, {
 			menu.ocultar()
 			juego.mostrar()
 			game.removeVisual(self)
 			game.addVisual(self)
 		})
-		game.schedule(1000, {
+		game.schedule(25 * 40, {
 			game.removeTickEvent("Transicion")
 			game.removeVisual(self)
 			position = game.at(-15, 0)
 			enPantalla.cambiar(juego)
 		})
 	}
+}
+
+object estadoIntermedio inherits Pantalla (
+	codigo = 4,
+	objetos = [] ){
+	override method up() {}
+	override method down() {}
+	override method left() {}
+	override method right() {}
+	override method enter() {}
+	override method r() {}
+	override method num1() {}
+	override method num2() {}
+	override method space() {}
 }
