@@ -1,5 +1,19 @@
-test "testX" {
+import gameplay.*
+import wollok.game.*
 
-	assert.that(true)
-
+describe "Tests de Teclado" {
+	const posInicial = auto.position()
+	test "Al tocar la teclas right y left, Mate se mueve hacia los costados" {
+		auto.carril(2)
+		juego.right()
+		assert.notEquals(posInicial,auto.position())
+	}
+	test "Cuando Mate se encuentra en los carriles extremos, no puede salirse de la ruta" {
+		auto.carril(1)
+		juego.left()
+		assert.equals(posInicial,auto.position())
+		auto.carril(3)
+		juego.right()
+		assert.equals(posInicial,auto.position())
+	}
 }
