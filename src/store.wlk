@@ -98,7 +98,7 @@ object tabla4 inherits Tabla (
 	image = "Tabla4.png",
 	tablaComprada = "Tabla4comp.png",
 	precio = 45 ){
-	override method efecto() {auto.luces(true)}
+	override method efecto() {tormenta.image("tormentaTraslucida.png")}
 }
 
 object tabla5 inherits Tabla (

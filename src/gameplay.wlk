@@ -76,14 +76,13 @@ const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
 
 object auto {
 	var property position = game.at(15,10)
-	var property image = "auto.png"
+	var property image = "mate.png"
 	
 	var property carril
 	var agilidad = 1
 	var property velocidad
 	var vidas = 1
 	var property vidasEnPartida
-	var property luces = false
 	var doblando = false
 	
 	method configurar() {
@@ -93,7 +92,7 @@ object auto {
 	}
 	
 	method reiniciar() {
-		position = game.at(7,1)
+		position = game.at(6,1)
 		carril = 2
 		velocidad = 250
 		vidasEnPartida = vidas
@@ -145,7 +144,7 @@ object auto {
 class ObjetoDeCalle {
 	var property image
 	var property position = game.at(15, 10)
-	const property posicionesPosibles
+	const property posicionesPosibles = [4,5,6,7,8]
 	var property ultimaPosicion = 15
 	
 	method aparecer() {
@@ -164,14 +163,11 @@ class ObjetoDeCalle {
 	}
 }
 
-class Inanimado inherits ObjetoDeCalle (
-	image = "celda.png",
-	posicionesPosibles = [5,6,7,8,9]
-) {}
+class Barril inherits ObjetoDeCalle (image = "barril.png") {}
 
 class Vaca inherits ObjetoDeCalle (
 	image = "vaca.png",
-	posicionesPosibles = [5,7,9] ) {
+	posicionesPosibles = [4,6,8] ) {
 	
 	var property carril = 0
 	
@@ -179,17 +175,17 @@ class Vaca inherits ObjetoDeCalle (
 		const libre = generador.lugaresLibres().filter{num => posicionesPosibles.contains(num)}
 		ultimaPosicion = libre.anyOne()
 		position = game.at(ultimaPosicion, 10)
-		carril = (ultimaPosicion - 3) / 2
+		carril = (ultimaPosicion - 2) / 2
 	}
 	
 	override method aparecer(posicion) {
 		super(posicion)
-		carril = (ultimaPosicion - 3) / 2
+		carril = (ultimaPosicion - 2) / 2
 	}
 	
 	method correrse() {
 		if (carril == auto.carril()) {
-			position = position.down(1)
+			position = position.up(1)
 			if (carril == 3) {position = position.left(1)}
 			else {position = position.right(1)}
 			carril = 0
@@ -218,9 +214,9 @@ object tormenta {
 	}
 }
 
-const obstaculosInanimados = [new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado()]
+const barriles = [new Barril(), new Barril(), new Barril(), new Barril(), new Barril()]
 const vacas = [new Vaca(), new Vaca()]
-const obstaculos = obstaculosInanimados + vacas
+const obstaculos = barriles + vacas
 
 object generador {
 	var contador = 0
@@ -229,12 +225,12 @@ object generador {
 	var property lugaresLibres
 	
 	method generarObstaculos() {
-		obstaculosInanimados.get(contador).aparecer()
+		barriles.get(contador).aparecer()
 		contador++
-		if (contador == obstaculosInanimados.size() - 1) {
-			lugaresLibres = [5,6,7,8,9]
+		if (contador == barriles.size() - 1) {
+			lugaresLibres = [4,5,6,7,8]
 			self.actualizarLugares(contador - 1)
-			obstaculosInanimados.get(contador).aparecer(lugaresLibres.anyOne())
+			barriles.get(contador).aparecer(lugaresLibres.anyOne())
 			self.actualizarLugares(contador)
 			vacas.get(ciclos%vacas.size()).aparecer()
 			contador = 0
@@ -243,7 +239,7 @@ object generador {
 	}
 	
 	method actualizarLugares(_contador) {
-		lugarOcupado = obstaculosInanimados.get(_contador).ultimaPosicion()
+		lugarOcupado = barriles.get(_contador).ultimaPosicion()
 		lugaresLibres.remove(lugarOcupado)
 	}
 	
