@@ -1,19 +1,48 @@
 import gameplay.*
 import wollok.game.*
+import music.*
+import menu.*
+import store.*
 
 describe "Tests de Teclado" {
-	const posInicial = auto.position()
-	test "Al tocar la teclas right y left, Mate se mueve hacia los costados" {
+	
+	// Controles para Mate
+	const posInicialAuto = auto.position()
+	test "Al tocar las teclas right y left, Mate se mueve hacia los costados" {
 		auto.carril(2)
 		juego.right()
-		assert.notEquals(posInicial,auto.position())
+		assert.notEquals(posInicialAuto,auto.position())
+		auto.carril(2)
+		juego.left()
+		assert.notEquals(posInicialAuto,auto.position())
 	}
 	test "Cuando Mate se encuentra en los carriles extremos, no puede salirse de la ruta" {
 		auto.carril(1)
 		juego.left()
-		assert.equals(posInicial,auto.position())
+		assert.equals(posInicialAuto,auto.position())
 		auto.carril(3)
 		juego.right()
-		assert.equals(posInicial,auto.position())
+		assert.equals(posInicialAuto,auto.position())
+	}
+	
+	// Controles para menú
+	test "Al tocar down, el puntero apunta al botón tienda" {
+		puntero.apuntaA(juego)
+		menu.down()
+		assert.equals(puntero.apuntaA(), tienda)
+	}
+	test "Al tocar up, el puntero apunta al botón jugar" {
+		puntero.apuntaA(tienda)
+		menu.up()
+		assert.equals(puntero.apuntaA(), juego)
+	}
+	
+	// Controles para tienda
+	test "El seleccionador solo puede apuntar hacia tablas contiguas" {
+		const posInicialSeleccionador = seleccionador.position()
+		tienda.left()
+		assert.equals(posInicialSeleccionador,seleccionador.position())
+		tienda.down()
+		assert.notEquals(posInicialSeleccionador,seleccionador.position())
 	}
 }
