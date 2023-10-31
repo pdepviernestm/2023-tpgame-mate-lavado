@@ -5,7 +5,7 @@ import music.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = [ruta1, ruta2] + obstaculos + [auto, cartelContador, contador] ){
+	objetos = fondoJ + obstaculos + [auto, cartelContador, contador] ){
 	
 	override method mostrar() {
 		super()
@@ -21,10 +21,7 @@ object juego inherits Pantalla (
 	}
 	
 	method empezarEventos() {
-		game.onTick(auto.velocidad(), "Avanza auto", {
-			auto.avanza()
-			fondoJuego.actualizar()
-		})
+		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza() fondoJuego.actualizar()})
 		game.onTick(auto.velocidad()/10, "Avanza contador", {contador.avanza()})
 		game.onTick(auto.velocidad() * 4, "Generar obstaculos", {generador.generarObstaculos()})
 		game.onTick(10000, "Aumentar velocidad", {auto.aumentarVelocidad()})
@@ -44,13 +41,12 @@ object juego inherits Pantalla (
 	override method r() {}
 	override method num1() {}
 	override method num2() {}
-	override method space() {bocina.tocar()}
+	override method space() {auto.tocarBocina()}
 }
 
 object fondoJuego {
 	method actualizar() {
-		if (ruta1.position().y() == -11) {ruta1.position(game.at(0,9))}
-		if (ruta2.position().y() == -11) {ruta2.position(game.at(0,9))}
+		fondoJ.forEach{f => if (f.position().y() <= -11) f.position(game.at(0,9))}
 	}
 	
 	method reiniciar() {
@@ -59,6 +55,7 @@ object fondoJuego {
 	}
 }
 
+const fondoJ = [ruta1, ruta2]
 const ruta1 = new Visual (position = game.at(0,-1), image = "ruta.png")
 const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
 
@@ -91,9 +88,9 @@ object auto {
 		if (carril > 1 && not doblando) {
 			doblando = true
 			position = position.left(1)
-			carril = carril - 1
 			game.schedule(250 / agilidad, {
 				position = position.left(1)
+				carril = carril - 1
 				doblando = false
 			})
 		}
@@ -103,12 +100,17 @@ object auto {
 		if (carril < 3 && not doblando) {
 			doblando = true
 			position = position.right(1)
-			carril = carril + 1
 			game.schedule(250 / agilidad, {
 				position = position.right(1)
+				carril = carril + 1
 				doblando = false
 			})
 		}
+	}
+	
+	method tocarBocina() {
+		bocina.tocar()
+		vacas.forEach{v => v.correrse()}
 	}
 	
 	method aumentaAgilidad() {agilidad = 2}
@@ -123,13 +125,13 @@ object auto {
 		}
 	}
 	
-	method avanza() {([ruta1, ruta2] + obstaculos).forEach{obj => obj.position(obj.position().down(1))}}
+	method avanza() {(fondoJ + obstaculos).forEach{obj => obj.position(obj.position().down(1))}}
 }
 
 class Obstaculo {
 	var property image
 	var property position = game.at(15, 10)
-	var posicionesPosibles
+	const property posicionesPosibles
 	var property ultimaPosicion = 15
 	
 	method aparecer() {
@@ -157,23 +159,57 @@ class Vaca inherits Obstaculo (
 	image = "vaca.png",
 	posicionesPosibles = [5,7,9] ) {
 	
-	var property carril
+	var property carril = 0
 	
-	method correrse() {}
+	override method aparecer() {
+		const libre = generador.lugaresLibres().filter{num => posicionesPosibles.contains(num)}
+		ultimaPosicion = libre.anyOne()
+		position = game.at(ultimaPosicion, 10)
+		carril = (ultimaPosicion - 3) / 2
+	}
+	
+	override method aparecer(posicion) {
+		super(posicion)
+		carril = (ultimaPosicion - 3) / 2
+	}
+	
+	method correrse() {
+		if (carril == auto.carril()) {
+			position = position.down(1)
+			if (carril == 3) {position = position.left(1)}
+			else {position = position.right(1)}
+			carril = 0
+		}
+	}
 }
 
-const obstaculos = [new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado()]
+const obstaculosInanimados = [new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado(), new Inanimado()]
+const vacas = [new Vaca(), new Vaca()]
+const obstaculos = obstaculosInanimados + vacas
 
 object generador {
 	var contador = 0
+	var ciclos = 0
+	var lugarOcupado
+	var property lugaresLibres
 	
 	method generarObstaculos() {
-		obstaculos.get(contador).aparecer()
+		obstaculosInanimados.get(contador).aparecer()
 		contador++
-		if (contador == obstaculos.size() - 1) {
-			obstaculos.get(contador).aparecer()
+		if (contador == obstaculosInanimados.size() - 1) {
+			lugaresLibres = [5,6,7,8,9]
+			self.actualizarLugares(contador - 1)
+			obstaculosInanimados.get(contador).aparecer(lugaresLibres.anyOne())
+			self.actualizarLugares(contador)
+			vacas.get(ciclos%vacas.size()).aparecer()
 			contador = 0
+			ciclos++
 		}
+	}
+	
+	method actualizarLugares(_contador) {
+		lugarOcupado = obstaculosInanimados.get(_contador).ultimaPosicion()
+		lugaresLibres.remove(lugarOcupado)
 	}
 	
 	method reiniciar() {
