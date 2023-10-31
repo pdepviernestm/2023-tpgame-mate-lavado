@@ -4,8 +4,8 @@
 
 - Carbia, Gabriel
 - Rabey Fischer, María Sofía
-- Romero, Nicolás
-- Silva, Federico
+- Romero, Nicolás Esteban
+- Silva, Federico Nahuel
 - Valmadre Amoia, Valentina
 
 ## Capturas
