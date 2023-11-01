@@ -40,6 +40,7 @@ object enPantalla {
 	   2 = Tienda
 	   3 = Juego
 	   4 = Transicion
+	   5 = Controles
 	 */
 	method cambiar(_hay) {hay = _hay} // Definido para que no de advertencia
 }
@@ -64,8 +65,8 @@ object cambio {
 		}
 		else {
 			menu.ocultar()
-			tienda.mostrar()
-			game.schedule(100, {enPantalla.cambiar(tienda)})
+			puntero.apuntaA().mostrar()
+			game.schedule(100, {enPantalla.cambiar(puntero.apuntaA())})
 		}
 	}
 }

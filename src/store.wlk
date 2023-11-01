@@ -2,6 +2,7 @@ import wollok.game.*
 import visuals.*
 import gameplay.*
 import music.*
+import menu.*
 
 object tienda inherits Pantalla (
 	codigo = 2,
@@ -14,19 +15,12 @@ object tienda inherits Pantalla (
 	override method right() {seleccionador.derecha()}
 	override method enter() {
 		const seleccionado = seleccionador.apuntaA()
-		
-		if (not seleccionado.comprado()) {
-			seleccionado.comprar()
-		}
-		
-		else if (seleccionado.esAspecto()) {
-			seleccionado.efecto()
-			tick.position(seleccionado.position())
-		}
+		if (not seleccionado.comprado()) {seleccionado.comprar()}
+		else if (seleccionado.esAspecto()) {seleccionado.efecto()}
 	}
 	override method r() {cambio.aMenu()}
-	override method num1() {musica.bajarVolumen()}
-	override method num2() {musica.subirVolumen()}
+	override method num1() {menu.num1()}
+	override method num2() {menu.num2()}
 	override method space() {monedas.agregar(10)}
 }
 
@@ -46,9 +40,9 @@ class Tabla {
 	var property position
 	var property image
 	const tablaComprada
+	const property esAspecto = false
 	
 	const precio
-	var property esAspecto = false
 	var property comprado = false
 	
 	method comprar() {
@@ -57,7 +51,6 @@ class Tabla {
 			comprado = true
 			self.efecto()
 			image = tablaComprada
-			if (esAspecto) {tick.position(self.position())}
 		}
 	}
 	
@@ -65,10 +58,22 @@ class Tabla {
 }
 
 class TablaDeAspecto inherits Tabla (esAspecto = true) {
-	const imagenAlternativa
+	const nuevoAspecto
+	
+	override method comprar() {
+		super()
+		tick.position(self.position())
+	}
 	
 	override method efecto() {
-		auto.image(imagenAlternativa)
+		if (tick.position() == self.position()) {
+			tick.position(game.at(15,10))
+			auto.image("mate.png")
+		}
+		else {
+			tick.position(self.position())
+			auto.image(nuevoAspecto)
+		}
 	}
 }
 
@@ -77,21 +82,21 @@ const tabla1 = new TablaDeAspecto (
 	image = "Tabla1.png",
 	tablaComprada = "Tabla1comp.png",
 	precio = 15,
-	imagenAlternativa = "mateSombrero.png" )
+	nuevoAspecto = "mateSombrero.png" )
 	
 const tabla2 = new TablaDeAspecto (
 	position = game.at(5,5),
 	image = "Tabla2.png",
 	tablaComprada = "Tabla2comp.png",
 	precio = 30,
-	imagenAlternativa = "mateAzul.png" )
+	nuevoAspecto = "mateAzul.png" )
 
 const tabla3 = new TablaDeAspecto (
 	position = game.at(9,5),
 	image = "Tabla3.png",
 	tablaComprada = "Tabla3comp.png",
 	precio = 100,
-	imagenAlternativa = "rayoMcqueen.png" )
+	nuevoAspecto = "rayoMcqueen.png" )
 
 object tabla4 inherits Tabla (
 	position = game.at(1,1),

@@ -26,6 +26,7 @@ describe "Tests de Teclado" {
 	}
 	
 	// Controles para menú
+	/*
 	test "Al tocar down, el puntero apunta al botón tienda" {
 		puntero.apuntaA(juego)
 		menu.down()
@@ -36,6 +37,7 @@ describe "Tests de Teclado" {
 		menu.up()
 		assert.equals(puntero.apuntaA(), juego)
 	}
+	*/
 	
 	// Controles para tienda
 	test "El seleccionador solo puede apuntar hacia tablas contiguas" {

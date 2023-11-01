@@ -6,11 +6,11 @@ import music.*
 
 object menu inherits Pantalla (
 	codigo = 1,
-	objetos = [fondo, cartel, botonJugar, botonTienda, puntero] ){
+	objetos = [fondo, cartel, botonJugar, botonTienda, botonControles, puntero] ){
 		
 	// Teclado
-	override method up() {puntero.botonJugar()}
-	override method down() {puntero.botonTienda()}
+	override method up() {puntero.arriba()}
+	override method down() {puntero.abajo()}
 	override method left() {}
 	override method right() {}
 	override method enter() {cambio.desdeMenu()}
@@ -21,23 +21,45 @@ object menu inherits Pantalla (
 }
 
 const fondo = new Visual (position = game.origin(), image = "background.jpg")
-
 const cartel = new Visual (position = game.at(1,0), image = "logo.png")
+const botonJugar = new Visual (position = game.at(8,7), image = "playButton.png")
+const botonTienda = new Visual (position = game.at(8,5), image = "shopButton.png")
+const botonControles = new Visual (position = game.at(8,3), image = "controlsButton.png")
 
-const botonJugar = new Visual (position = game.at(8,6), image = "playButton.png")
-
-const botonTienda = new Visual (position = game.at(8,4), image = "shopButton.png")
-
-object puntero inherits Visual (position = game.at(12,5), image = "pointer.png") {
-	var property apuntaA = juego
+object puntero inherits Visual (position = game.at(12,6), image = "pointer.png") {
 	
-	method botonJugar(){
-		apuntaA = juego
-		self.position(game.at(12,5))
+	var apuntaA = 0
+	method apuntaA() = [juego, tienda, controles].get(apuntaA)
+	
+	method arriba(){
+		if(apuntaA > 0) {
+			apuntaA--
+			self.position(self.position().up(2))
+		}
 	}
 	
-	method botonTienda(){
-		apuntaA = tienda
-		self.position(game.at(12,3))
+	method abajo(){
+		if(apuntaA < 2) {
+			apuntaA++
+			self.position(self.position().down(2))
+		}
 	}
 }
+
+object controles inherits Pantalla (
+	codigo = 5,
+	objetos = [pantallaControles] ){
+		
+	// Teclado
+	override method up() {}
+	override method down() {}
+	override method left() {}
+	override method right() {}
+	override method enter() {}
+	override method r() {cambio.aMenu()}
+	override method num1() {menu.num1()}
+	override method num2() {menu.num2()}
+	override method space() {}
+}
+
+const pantallaControles = new Visual (position = game.at(0, 0), image = "transicion.png")
