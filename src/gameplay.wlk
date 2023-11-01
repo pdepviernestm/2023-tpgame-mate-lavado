@@ -2,10 +2,11 @@ import visuals.*
 import wollok.game.*
 import intro.*
 import music.*
+import store.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = fondoJ + obstaculos + [auto, tormenta, cartelContador, contador] ){
+	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador] ){
 	
 	override method mostrar() {
 		super()
@@ -33,12 +34,12 @@ object juego inherits Pantalla (
 	method empezarEventosActualizables() {
 		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza() fondoJuego.actualizar()})
 		game.onTick(auto.velocidad()/10, "Avanza contador", {contador.avanza()})
-		game.onTick(auto.velocidad() * 4, "Generar obstaculos", {generador.generarObstaculos()})
+		game.onTick(auto.velocidad() * 4, "Generar objetos", {generador.generarObstaculos()})
 		game.onTick(10000, "Aumentar velocidad", {auto.aumentarVelocidad()})
 	}
 	
 	method terminarEventosActualizables() {
-		const eventos = ["Avanza auto", "Avanza contador", "Generar obstaculos", "Aumentar velocidad"]
+		const eventos = ["Avanza auto", "Avanza contador", "Generar objetos", "Aumentar velocidad"]
 		eventos.forEach{evento => game.removeTickEvent(evento)}
 	}
 	
@@ -84,15 +85,19 @@ object auto {
 	var vidas = 1
 	var property vidasEnPartida
 	var doblando = false
+	var property inmunidad = false
 	
 	method configurar() {
-  		game.addVisual(self)
-		game.onCollideDo(self, {obstaculo => obstaculo.chocar()})
-		game.removeVisual(self)
+		[hitboxAuto, self].forEach{obj =>
+	  		game.addVisual(obj)
+			game.onCollideDo(obj, {obstaculo => obstaculo.chocar()})
+			game.removeVisual(obj)
+		}
 	}
 	
 	method reiniciar() {
 		position = game.at(6,1)
+		hitboxAuto.actualizar()
 		carril = 2
 		velocidad = 250
 		vidasEnPartida = vidas
@@ -102,8 +107,10 @@ object auto {
 		if (carril > 1 && not doblando) {
 			doblando = true
 			position = position.left(1)
+			hitboxAuto.actualizar()
 			game.schedule(250 / agilidad, {
 				position = position.left(1)
+				hitboxAuto.actualizar()
 				carril = carril - 1
 				doblando = false
 			})
@@ -114,8 +121,10 @@ object auto {
 		if (carril < 3 && not doblando) {
 			doblando = true
 			position = position.right(1)
+			hitboxAuto.actualizar()
 			game.schedule(250 / agilidad, {
 				position = position.right(1)
+				hitboxAuto.actualizar()
 				carril = carril + 1
 				doblando = false
 			})
@@ -138,7 +147,16 @@ object auto {
 		}
 	}
 	
-	method avanza() {(fondoJ + obstaculos).forEach{obj => obj.position(obj.position().down(1))}}
+	method avanza() {(fondoJ + obstaculos + monedasJuego).forEach{obj => obj.position(obj.position().down(1))}}
+}
+
+object hitboxAuto {
+	const property image = "vacio.png"
+	var property position = game.at(15,11)
+	
+	method actualizar() {
+		position = auto.position().up(1)
+	}
 }
 
 class ObjetoDeCalle {
@@ -158,17 +176,18 @@ class ObjetoDeCalle {
 	}
 	
 	method chocar() {
-		auto.vidasEnPartida(auto.vidasEnPartida() - 1)
-		if (auto.vidasEnPartida() == 0) {cambio.aMenu()}
+		if (not auto.inmunidad()) {
+			auto.inmunidad(true)
+			game.schedule(1000, {auto.inmunidad(false)})
+			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
+			if (auto.vidasEnPartida() == 0) {cambio.aMenu()}
+		}
 	}
 }
 
 class Barril inherits ObjetoDeCalle (image = "barril.png") {}
 
-class Vaca inherits ObjetoDeCalle (
-	image = "vaca.png",
-	posicionesPosibles = [4,6,8] ) {
-	
+class Vaca inherits ObjetoDeCalle (image = "vaca.png", posicionesPosibles = [4,6,8]) {
 	var property carril = 0
 	
 	override method aparecer() {
@@ -186,37 +205,24 @@ class Vaca inherits ObjetoDeCalle (
 	method correrse() {
 		if (carril == auto.carril()) {
 			position = position.up(1)
-			if (carril == 3) {position = position.left(1)}
+			if (carril == 1) {position = position.left(1)}
 			else {position = position.right(1)}
 			carril = 0
 		}
 	}
 }
 
-class Moneda inherits ObjetoDeCalle {}
-
-object tormenta {
-	var property position = game.at(0, 10)
-	var property image = "tormenta.png"
-	
-	method aparecer() {
-		if (0.randomUpTo(1) < 0.34) {
-			position = game.at(0, 10)
-			game.onTick(100, "Aparece tormenta", {position = position.down(1)})
-			game.schedule(500, {game.removeTickEvent("Aparece tormenta")})
-			game.schedule(5500, {self.desaparecer()})
-		}
-	}
-	
-	method desaparecer() {
-		game.onTick(100, "Desaparece tormenta", {position = position.up(1)})
-		game.schedule(500, {game.removeTickEvent("Desaparece tormenta")})
+class Moneda inherits ObjetoDeCalle (image = "moneda.png") {
+	override method chocar() {
+		position = game.at(20, 10)
+		monedas.agregar(1)
 	}
 }
 
+const obstaculos = barriles + vacas
 const barriles = [new Barril(), new Barril(), new Barril(), new Barril(), new Barril()]
 const vacas = [new Vaca(), new Vaca()]
-const obstaculos = barriles + vacas
+const monedasJuego = [new Moneda(), new Moneda(), new Moneda()]
 
 object generador {
 	var contador = 0
@@ -236,6 +242,7 @@ object generador {
 			contador = 0
 			ciclos++
 		}
+		else {self.generarMonedas()}
 	}
 	
 	method actualizarLugares(_contador) {
@@ -245,7 +252,32 @@ object generador {
 	
 	method reiniciar() {
 		contador = 0
-		obstaculos.forEach{obst => obst.position(game.at(15,10))}
+		(obstaculos + monedasJuego).forEach{obst => obst.position(game.at(15,10))}
+	}
+	
+	method generarMonedas() {
+		lugaresLibres = [4,6,8]
+		self.actualizarLugares(contador - 1)
+		monedasJuego.get(contador - 1).aparecer(lugaresLibres.anyOne())
+	}
+}
+
+object tormenta {
+	var property position = game.at(0, 10)
+	var property image = "tormenta.png"
+	
+	method aparecer() {
+		if (0.randomUpTo(1) < 0.34) {
+			position = game.at(0, 10)
+			game.onTick(100, "Aparece tormenta", {position = position.down(1)})
+			game.schedule(500, {game.removeTickEvent("Aparece tormenta")})
+			game.schedule(5500, {self.desaparecer()})
+		}
+	}
+	
+	method desaparecer() {
+		game.onTick(100, "Desaparece tormenta", {position = position.up(1)})
+		game.schedule(500, {game.removeTickEvent("Desaparece tormenta")})
 	}
 }
 
