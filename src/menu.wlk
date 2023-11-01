@@ -62,4 +62,4 @@ object controles inherits Pantalla (
 	override method space() {}
 }
 
-const pantallaControles = new Visual (position = game.at(0, 0), image = "transicion.png")
+const pantallaControles = new Visual (position = game.at(0, 0), image = "fondoControles.jpg")

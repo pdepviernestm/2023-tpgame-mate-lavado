@@ -23,23 +23,25 @@ object juego inherits Pantalla (
 	
 	method empezarEventos() {
 		self.empezarEventosActualizables()
+		game.onTick(10000, "Aumentar velocidad", {auto.aumentarVelocidad()})
 		game.onTick(15000, "Generar tormenta", {tormenta.aparecer()})
 	}
 	
 	method terminarEventos() {
 		self.terminarEventosActualizables()
+		game.removeTickEvent("Aumentar velocidad")
 		game.removeTickEvent("Generar tormenta")
 	}
 	
 	method empezarEventosActualizables() {
 		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza() fondoJuego.actualizar()})
 		game.onTick(auto.velocidad()/10, "Avanza contador", {contador.avanza()})
-		game.onTick(auto.velocidad() * 4, "Generar objetos", {generador.generarObstaculos()})
-		game.onTick(10000, "Aumentar velocidad", {auto.aumentarVelocidad()})
+		game.onTick(auto.velocidad() * 4, "Generar objetos", {generador.generarObjetos()})
+		game.onTick(auto.velocidad() * 5, "Aparecen cactus", {fondoJuego.apareceCactus()})
 	}
 	
 	method terminarEventosActualizables() {
-		const eventos = ["Avanza auto", "Avanza contador", "Generar objetos", "Aumentar velocidad"]
+		const eventos = ["Avanza auto", "Avanza contador", "Generar objetos", "Aparecen cactus"]
 		eventos.forEach{evento => game.removeTickEvent(evento)}
 	}
 	
@@ -61,17 +63,26 @@ object juego inherits Pantalla (
 }
 
 object fondoJuego {
+	var contador = 0
+	
 	method actualizar() {
-		fondoJ.forEach{f => if (f.position().y() <= -11) f.position(game.at(0,9))}
+		[ruta1, ruta2].forEach{f => if (f.position().y() <= -11) f.position(game.at(0,9))}
 	}
 	
 	method reiniciar() {
 		ruta1.position(game.at(0,-1))
 		ruta2.position(game.at(0,9))
+		variosCactus.forEach{c => c.position(game.at(15, 10))}
+	}
+	
+	method apareceCactus() {
+		variosCactus.get(contador % variosCactus.size()).aparecer()
+		contador++
 	}
 }
 
-const fondoJ = [ruta1, ruta2]
+const fondoJ = [ruta1, ruta2] + variosCactus
+const variosCactus = [new Cactus(), new Cactus(), new Cactus(), new Cactus()]
 const ruta1 = new Visual (position = game.at(0,-1), image = "ruta.png")
 const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
 
@@ -151,7 +162,6 @@ object auto {
 }
 
 object hitboxAuto {
-	const property image = "vacio.png"
 	var property position = game.at(15,11)
 	
 	method actualizar() {
@@ -159,22 +169,21 @@ object hitboxAuto {
 	}
 }
 
-class ObjetoDeCalle {
+class ObjetoDeJuego {
 	var property image
 	var property position = game.at(15, 10)
-	const property posicionesPosibles = [4,5,6,7,8]
 	var property ultimaPosicion = 15
-	
-	method aparecer() {
-		ultimaPosicion = posicionesPosibles.anyOne()
-		position = game.at(ultimaPosicion, 10)
-	}
+	const property posicionesPosibles
 	
 	method aparecer(posicion) {
 		ultimaPosicion = posicion
 		position = game.at(ultimaPosicion, 10)
 	}
 	
+	method aparecer() {self.aparecer(posicionesPosibles.anyOne())}
+}
+
+class Obstaculo inherits ObjetoDeJuego {
 	method chocar() {
 		if (not auto.inmunidad()) {
 			auto.inmunidad(true)
@@ -185,21 +194,24 @@ class ObjetoDeCalle {
 	}
 }
 
-class Barril inherits ObjetoDeCalle (image = "barril.png") {}
+class Barril inherits Obstaculo (
+	image = "barril.png",
+	posicionesPosibles = [4,5,6,7,8]
+) {}
 
-class Vaca inherits ObjetoDeCalle (image = "vaca.png", posicionesPosibles = [4,6,8]) {
+class Vaca inherits Obstaculo (
+	image = "vaca.png",
+	posicionesPosibles = [4,6,8] ) {
 	var property carril = 0
-	
-	override method aparecer() {
-		const libre = generador.lugaresLibres().filter{num => posicionesPosibles.contains(num)}
-		ultimaPosicion = libre.anyOne()
-		position = game.at(ultimaPosicion, 10)
-		carril = (ultimaPosicion - 2) / 2
-	}
 	
 	override method aparecer(posicion) {
 		super(posicion)
 		carril = (ultimaPosicion - 2) / 2
+	}
+	
+	override method aparecer() {
+		const libre = generador.lugaresLibres().filter{num => posicionesPosibles.contains(num)}
+		self.aparecer(libre.anyOne())
 	}
 	
 	method correrse() {
@@ -212,12 +224,19 @@ class Vaca inherits ObjetoDeCalle (image = "vaca.png", posicionesPosibles = [4,6
 	}
 }
 
-class Moneda inherits ObjetoDeCalle (image = "moneda.png") {
-	override method chocar() {
+class Moneda inherits ObjetoDeJuego (
+	image = "moneda.png",
+	posicionesPosibles = [4,5,6,7,8] ) {
+		
+	method chocar() {
 		position = game.at(20, 10)
 		monedas.agregar(1)
 	}
 }
+
+class Cactus inherits ObjetoDeJuego (
+	image = "cactus.png",
+	posicionesPosibles = [0, 1, 2, 11, 12, 13] ) {}
 
 const obstaculos = barriles + vacas
 const barriles = [new Barril(), new Barril(), new Barril(), new Barril(), new Barril()]
@@ -230,7 +249,7 @@ object generador {
 	var lugarOcupado
 	var property lugaresLibres
 	
-	method generarObstaculos() {
+	method generarObjetos() {
 		barriles.get(contador).aparecer()
 		contador++
 		if (contador == barriles.size() - 1) {
@@ -245,6 +264,12 @@ object generador {
 		else {self.generarMonedas()}
 	}
 	
+	method generarMonedas() {
+		lugaresLibres = [4,6,8]
+		self.actualizarLugares(contador - 1)
+		monedasJuego.get(contador - 1).aparecer(lugaresLibres.anyOne())
+	}
+	
 	method actualizarLugares(_contador) {
 		lugarOcupado = barriles.get(_contador).ultimaPosicion()
 		lugaresLibres.remove(lugarOcupado)
@@ -253,12 +278,6 @@ object generador {
 	method reiniciar() {
 		contador = 0
 		(obstaculos + monedasJuego).forEach{obst => obst.position(game.at(15,10))}
-	}
-	
-	method generarMonedas() {
-		lugaresLibres = [4,6,8]
-		self.actualizarLugares(contador - 1)
-		monedasJuego.get(contador - 1).aparecer(lugaresLibres.anyOne())
 	}
 }
 
