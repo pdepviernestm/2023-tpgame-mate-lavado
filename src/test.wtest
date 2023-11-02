@@ -3,6 +3,7 @@ import wollok.game.*
 import music.*
 import menu.*
 import store.*
+import objects.*
 
 describe "Tests de Teclado" {
 	
@@ -59,7 +60,7 @@ describe "Tests de Teclado" {
 		tienda.enter()
 		assert.notEquals(imagenInicial, auto.image())
 	}
-		test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras" {
+	test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras" {
 		const agilidadInicial = auto.agilidad()
 		const vidas = auto.vidas()
 		const tormentaInicial = tormenta.image()
@@ -73,12 +74,18 @@ describe "Tests de Teclado" {
 		tienda.right()
 		tienda.enter()
 		assert.that(vidas < auto.vidas())
-	// test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras"
+	}
 }
 
+/*
 describe "Tests de Obstáculos" {
 	
-	// Vacas
-	// Tormenta de arena
-	// Barriles
-}
+	// Vacas y Barriles
+	test "Al chocarse contra un osbtáculo, Mate pierde una vida" {
+		auto.vidasEnPartida(1)
+		const obstaculo = new Vaca()
+		const vidas = auto.vidas()
+		game.onCollideDo(obstaculo, obstaculo.chocar())
+		assert.that(auto.vidas() < vidas)
+	}
+} */
