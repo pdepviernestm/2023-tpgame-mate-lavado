@@ -18,7 +18,7 @@ object tienda inherits Pantalla (
 		if (not seleccionado.comprado()) {seleccionado.comprar()}
 		else if (seleccionado.esAspecto()) {seleccionado.efecto()}
 	}
-	override method r() {cambio.aMenu(self)}
+	override method r() {cambio.entre(self, menu)}
 	override method num1() {menu.num1()}
 	override method num2() {menu.num2()}
 	override method space() {monedasTienda.agregar(10)}

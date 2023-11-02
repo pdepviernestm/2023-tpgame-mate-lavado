@@ -7,7 +7,7 @@ import objects.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador, corazon] ){
+	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador, corazon, cartelVidas] ){
 	
 	override method mostrar() {
 		super()
@@ -15,7 +15,9 @@ object juego inherits Pantalla (
 		self.empezarEventos()
 	}
 	
-	method inicializar() {[contador, fondoJuego, generador, auto, corazon].forEach{obj => obj.reiniciar()}}
+	method inicializar() {
+		[contador, fondoJuego, generador, auto, corazon, cartelVidas].forEach{obj => obj.reiniciar()}
+	}
 	
 	method empezarEventos() {
 		self.empezarEventosActualizables()
@@ -260,4 +262,15 @@ object corazon {
 		game.onTick(100, "Desaparece corazon", {position = position.up(1)})
 		game.schedule(300, {game.removeTickEvent("Desaparece corazon")})
 	}
+}
+
+object cartelVidas {
+	const property position = game.at(0,7)
+	var property image
+	
+	method actualizar() {
+		image = "cartelVidas" + auto.vidasEnPartida().toString() + ".png"
+	}
+	
+	method reiniciar() {self.actualizar()}
 }

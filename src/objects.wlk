@@ -2,6 +2,7 @@ import gameplay.*
 import wollok.game.*
 import store.*
 import visuals.*
+import menu.*
 
 class ObjetoDeJuego {
 	var property image
@@ -23,14 +24,15 @@ class Obstaculo inherits ObjetoDeJuego {
 			auto.inmunidad(true)
 			game.schedule(1000, {auto.inmunidad(false)})
 			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
+			cartelVidas.actualizar()
+			corazon.aparece()
 			if (auto.vidasEnPartida() == 0) {
 				juego.terminarEventos()
 				enPantalla.hay(estadoIntermedio)
 				game.schedule(2000, {
-					cambio.aMenu(juego)
+					cambio.conTransicionEntre(juego, menu)
 				})
 			}
-			else corazon.aparece()
 		}
 	}
 }

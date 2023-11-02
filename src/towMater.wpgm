@@ -4,6 +4,7 @@ import keyboardSettings.*
 import music.*
 import intro.*
 import gameplay.*
+import menu.*
 
 program ejecutarJuego {
 	
@@ -23,6 +24,9 @@ program ejecutarJuego {
 	intro.mostrar()
 	auto.configurar()
 	game.schedule(1000, {bocina.iniciar()})
-	game.schedule(3000, {cambio.aMenu(intro)})
+	game.schedule(3000, {
+		cambio.entre(intro, menu)
+		musica.reproducir()
+	})
 	game.start()
 }
