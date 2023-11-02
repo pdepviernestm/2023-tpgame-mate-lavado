@@ -4,6 +4,7 @@ import music.*
 import menu.*
 import store.*
 import objects.*
+import gameplay.*
 
 describe "Tests de Teclado" {
 	
@@ -77,15 +78,15 @@ describe "Tests de Teclado" {
 	}
 }
 
-/*
+
 describe "Tests de Obstáculos" {
 	
 	// Vacas y Barriles
 	test "Al chocarse contra un osbtáculo, Mate pierde una vida" {
-		auto.vidasEnPartida(1)
-		const obstaculo = new Vaca()
-		const vidas = auto.vidas()
-		game.onCollideDo(obstaculo, obstaculo.chocar())
-		assert.that(auto.vidas() < vidas)
+		juego.mostrar()
+		const obstaculo = new Barril()
+		const vidas = auto.vidasEnPartida()	
+		obstaculo.chocar()
+		assert.that(auto.vidasEnPartida() < vidas)
 	}
-} */
+} 
