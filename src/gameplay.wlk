@@ -87,9 +87,9 @@ object auto {
 	var property image = "mate.png"
 	
 	var property carril
-	var agilidad = 1
+	var property agilidad = 1
 	var property velocidad
-	var vidas = 1
+	var property vidas = 1
 	var property vidasEnPartida
 	var doblando = false
 	var property inmunidad = false

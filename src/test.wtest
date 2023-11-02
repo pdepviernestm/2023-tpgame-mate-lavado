@@ -9,6 +9,7 @@ describe "Tests de Teclado" {
 	// Controles para Mate
 	const posInicialAuto = auto.position()
 	test "Al tocar las teclas right y left, Mate se mueve hacia los costados" {
+		auto.vidasEnPartida(1)
 		auto.carril(2)
 		juego.right()
 		assert.notEquals(posInicialAuto,auto.position())
@@ -26,18 +27,17 @@ describe "Tests de Teclado" {
 	}
 	
 	// Controles para menú
-	/*
-	test "Al tocar down, el puntero apunta al botón tienda" {
-		puntero.apuntaA(juego)
-		menu.down()
-		assert.equals(puntero.apuntaA(), tienda)
-	}
-	test "Al tocar up, el puntero apunta al botón jugar" {
-		puntero.apuntaA(tienda)
-		menu.up()
-		assert.equals(puntero.apuntaA(), juego)
-	}
-	*/
+	test "Al tocar down, el puntero apunta al botón tienda y, al tocar down de nuevo, a controles" {
+        menu.down()
+        assert.equals(puntero.apuntaA(), tienda)
+        menu.down()
+        assert.equals(puntero.apuntaA(), controles)
+    }
+    test "Al estar en el extremo de arriba, no se puede subir" {
+        const posInicialPuntero = juego
+        menu.up()
+        assert.equals(puntero.apuntaA(), posInicialPuntero)
+    }
 	
 	// Controles para tienda
 	test "El seleccionador solo puede apuntar hacia tablas contiguas" {
@@ -47,7 +47,32 @@ describe "Tests de Teclado" {
 		tienda.down()
 		assert.notEquals(posInicialSeleccionador,seleccionador.position())
 	}
-	// test "Al seleccionar una tabla de la primera fila, Mate cambia su apariencia" 
+	test "Al seleccionar una tabla de la primera fila, Mate cambia su apariencia" {
+		const imagenInicial = auto.image()
+		monedasTienda.agregar(1000)
+		tienda.enter()
+		assert.notEquals(imagenInicial, auto.image())
+		tienda.right()
+		tienda.enter()
+		assert.notEquals(imagenInicial, auto.image())
+		tienda.right()
+		tienda.enter()
+		assert.notEquals(imagenInicial, auto.image())
+	}
+		test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras" {
+		const agilidadInicial = auto.agilidad()
+		const vidas = auto.vidas()
+		const tormentaInicial = tormenta.image()
+		monedasTienda.agregar(1000)
+		tienda.down()
+		tienda.enter()
+		assert.notEquals(tormenta.image(), tormentaInicial)
+		tienda.right()
+		tienda.enter()
+		assert.that(agilidadInicial < auto.agilidad())
+		tienda.right()
+		tienda.enter()
+		assert.that(vidas < auto.vidas())
 	// test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras"
 }
 
