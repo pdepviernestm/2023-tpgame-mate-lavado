@@ -3,10 +3,11 @@ import wollok.game.*
 import intro.*
 import music.*
 import store.*
+import objects.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador] ){
+	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador, corazon] ){
 	
 	override method mostrar() {
 		super()
@@ -14,12 +15,7 @@ object juego inherits Pantalla (
 		self.empezarEventos()
 	}
 	
-	method inicializar() {[contador, fondoJuego, generador, auto].forEach{obj => obj.reiniciar()}}
-	
-	override method ocultar(){
-		super()
-		self.terminarEventos()
-	}
+	method inicializar() {[contador, fondoJuego, generador, auto, corazon].forEach{obj => obj.reiniciar()}}
 	
 	method empezarEventos() {
 		self.empezarEventosActualizables()
@@ -66,7 +62,7 @@ object fondoJuego {
 	var contador = 0
 	
 	method actualizar() {
-		[ruta1, ruta2].forEach{f => if (f.position().y() <= -11) f.position(game.at(0,9))}
+		[ruta1, ruta2].forEach{r => if (r.position().y() <= -10) r.position(game.at(0, 9))}
 	}
 	
 	method reiniciar() {
@@ -82,9 +78,9 @@ object fondoJuego {
 }
 
 const fondoJ = [ruta1, ruta2] + variosCactus
-const variosCactus = [new Cactus(), new Cactus(), new Cactus(), new Cactus()]
 const ruta1 = new Visual (position = game.at(0,-1), image = "ruta.png")
 const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
+const variosCactus = [new Cactus(), new Cactus(), new Cactus(), new Cactus()]
 
 object auto {
 	var property position = game.at(15,10)
@@ -119,12 +115,14 @@ object auto {
 			doblando = true
 			position = position.left(1)
 			hitboxAuto.actualizar()
-			game.schedule(250 / agilidad, {
-				position = position.left(1)
-				hitboxAuto.actualizar()
-				carril = carril - 1
-				doblando = false
-			})
+			if (vidasEnPartida > 0) {
+				game.schedule(250 / agilidad, {
+					position = position.left(1)
+					hitboxAuto.actualizar()
+					carril = carril - 1
+					doblando = false
+				})
+			}
 		}
 	}
 	
@@ -133,12 +131,14 @@ object auto {
 			doblando = true
 			position = position.right(1)
 			hitboxAuto.actualizar()
-			game.schedule(250 / agilidad, {
-				position = position.right(1)
-				hitboxAuto.actualizar()
-				carril = carril + 1
-				doblando = false
-			})
+			if (vidasEnPartida > 0) {
+				game.schedule(250 / agilidad, {
+					position = position.right(1)
+					hitboxAuto.actualizar()
+					carril = carril + 1
+					doblando = false
+				})
+			}
 		}
 	}
 	
@@ -168,75 +168,6 @@ object hitboxAuto {
 		position = auto.position().up(1)
 	}
 }
-
-class ObjetoDeJuego {
-	var property image
-	var property position = game.at(15, 10)
-	var property ultimaPosicion = 15
-	const property posicionesPosibles
-	
-	method aparecer(posicion) {
-		ultimaPosicion = posicion
-		position = game.at(ultimaPosicion, 10)
-	}
-	
-	method aparecer() {self.aparecer(posicionesPosibles.anyOne())}
-}
-
-class Obstaculo inherits ObjetoDeJuego {
-	method chocar() {
-		if (not auto.inmunidad()) {
-			auto.inmunidad(true)
-			game.schedule(1000, {auto.inmunidad(false)})
-			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
-			if (auto.vidasEnPartida() == 0) {cambio.aMenu()}
-		}
-	}
-}
-
-class Barril inherits Obstaculo (
-	image = "barril.png",
-	posicionesPosibles = [4,5,6,7,8]
-) {}
-
-class Vaca inherits Obstaculo (
-	image = "vaca.png",
-	posicionesPosibles = [4,6,8] ) {
-	var property carril = 0
-	
-	override method aparecer(posicion) {
-		super(posicion)
-		carril = (ultimaPosicion - 2) / 2
-	}
-	
-	override method aparecer() {
-		const libre = generador.lugaresLibres().filter{num => posicionesPosibles.contains(num)}
-		self.aparecer(libre.anyOne())
-	}
-	
-	method correrse() {
-		if (carril == auto.carril()) {
-			position = position.up(1)
-			if (carril == 1) {position = position.left(1)}
-			else {position = position.right(1)}
-			carril = 0
-		}
-	}
-}
-
-class Moneda inherits ObjetoDeJuego (
-	image = "moneda.png",
-	posicionesPosibles = [4,5,6,7,8] ) {
-		
-	method chocar() {
-		position = game.at(20, 10)
-		monedas.agregar(1)
-	}
-}
-
-class Cactus inherits ObjetoDeJuego (
-	image = "cactus.png",
-	posicionesPosibles = [0, 1, 2, 11, 12, 13] ) {}
 
 const obstaculos = barriles + vacas
 const barriles = [new Barril(), new Barril(), new Barril(), new Barril(), new Barril()]
@@ -312,3 +243,21 @@ object contador {
 	method reiniciar() {metros = 0}
 }
 
+object corazon {
+	var property position
+	const property image = "corazon.png"
+	
+	method reiniciar() {position = game.at(7,10)}
+	
+	method aparece() {
+		position = position.down(1)
+		game.onTick(100, "Aparece corazon", {position = position.down(1)})
+		game.schedule(200, {game.removeTickEvent("Aparece corazon")})
+		game.schedule(1000, {self.desaparece()})
+	}
+	
+	method desaparece() {
+		game.onTick(100, "Desaparece corazon", {position = position.up(1)})
+		game.schedule(300, {game.removeTickEvent("Desaparece corazon")})
+	}
+}

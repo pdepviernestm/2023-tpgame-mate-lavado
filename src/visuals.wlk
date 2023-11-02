@@ -39,34 +39,31 @@ object enPantalla {
 	   1 = Menu
 	   2 = Tienda
 	   3 = Juego
-	   4 = Transicion
-	   5 = Controles
+	   4 = Controles
+	   5 = Transicion
 	 */
-	method cambiar(_hay) {hay = _hay} // Definido para que no de advertencia
 }
 
 //----------------------- CAMBIO ENTRE PANTALLAS -----------------------
 
 object cambio {
-	method aMenu(){
-		enPantalla.hay().ocultar()
-		if (enPantalla.codigo() == intro.codigo()) {musica.reproducir()}
-		else if (enPantalla.codigo() == juego.codigo()) {musica.reanudar()}
-		enPantalla.cambiar(estadoIntermedio)
+	method aMenu(anterior){
+		anterior.ocultar()
+		if (anterior.codigo() == intro.codigo()) {musica.reproducir()}
+		else if (anterior.codigo() == juego.codigo()) {musica.reanudar()}
 		menu.mostrar()
-		game.schedule(100, {enPantalla.cambiar(menu)})
+		enPantalla.hay(menu)
 	}
 	
-	method desdeMenu(){
-		enPantalla.cambiar(estadoIntermedio)
-		if (puntero.apuntaA().codigo() == juego.codigo()) {
+	method desdeMenu(siguiente){
+		if (siguiente.codigo() == juego.codigo()) {
 			musica.pausar()
-			transicion.realizar()
+			transicion.realizar(menu, juego)
 		}
 		else {
 			menu.ocultar()
-			puntero.apuntaA().mostrar()
-			game.schedule(100, {enPantalla.cambiar(puntero.apuntaA())})
+			siguiente.mostrar()
+			enPantalla.hay(siguiente)
 		}
 	}
 }
@@ -75,12 +72,12 @@ object transicion {
 	var property position = game.at(-15, 0)
 	method image() = "transicion.png"
 	
-	method realizar() {
+	method realizar(anterior, siguiente) {
 		game.addVisual(self)
 		game.onTick(25, "Transicion", {position = position.right(1)})
 		game.schedule(25 * 20, {
-			menu.ocultar()
-			juego.mostrar()
+			anterior.ocultar()
+			siguiente.mostrar()
 			game.removeVisual(self)
 			game.addVisual(self)
 		})
@@ -88,13 +85,13 @@ object transicion {
 			game.removeTickEvent("Transicion")
 			game.removeVisual(self)
 			position = game.at(-15, 0)
-			enPantalla.cambiar(juego)
+			enPantalla.hay(siguiente)
 		})
 	}
 }
 
 object estadoIntermedio inherits Pantalla (
-	codigo = 4,
+	codigo = 5,
 	objetos = [] ){
 	override method up() {}
 	override method down() {}

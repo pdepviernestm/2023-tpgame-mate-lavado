@@ -6,7 +6,7 @@ import menu.*
 
 object tienda inherits Pantalla (
 	codigo = 2,
-	objetos = [fondoTienda, seleccionador] + tablas + [tick, monedas] ){
+	objetos = [fondoTienda, seleccionador] + tablas + [tick, monedasTienda] ){
 	
 	// Teclado
 	override method up() {seleccionador.arriba()}
@@ -18,13 +18,13 @@ object tienda inherits Pantalla (
 		if (not seleccionado.comprado()) {seleccionado.comprar()}
 		else if (seleccionado.esAspecto()) {seleccionado.efecto()}
 	}
-	override method r() {cambio.aMenu()}
+	override method r() {cambio.aMenu(self)}
 	override method num1() {menu.num1()}
 	override method num2() {menu.num2()}
-	override method space() {monedas.agregar(10)}
+	override method space() {monedasTienda.agregar(10)}
 }
 
-object monedas {
+object monedasTienda {
 	var property position = game.at(13,8)
 	var property cantidad = 0
 	
@@ -46,8 +46,8 @@ class Tabla {
 	var property comprado = false
 	
 	method comprar() {
-		if (monedas.cantidad() >= precio) {
-			monedas.descontar(precio)
+		if (monedasTienda.cantidad() >= precio) {
+			monedasTienda.descontar(precio)
 			comprado = true
 			self.efecto()
 			image = tablaComprada
@@ -58,17 +58,13 @@ class Tabla {
 }
 
 class TablaDeAspecto inherits Tabla (esAspecto = true) {
+	const aspectoOriginal = auto.image()
 	const nuevoAspecto
-	
-	override method comprar() {
-		super()
-		tick.position(self.position())
-	}
 	
 	override method efecto() {
 		if (tick.position() == self.position()) {
 			tick.position(game.at(15,10))
-			auto.image("mate.png")
+			auto.image(aspectoOriginal)
 		}
 		else {
 			tick.position(self.position())

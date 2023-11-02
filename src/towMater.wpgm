@@ -23,6 +23,6 @@ program ejecutarJuego {
 	intro.mostrar()
 	auto.configurar()
 	game.schedule(1000, {bocina.iniciar()})
-	game.schedule(3000, {cambio.aMenu()})
+	game.schedule(3000, {cambio.aMenu(intro)})
 	game.start()
 }

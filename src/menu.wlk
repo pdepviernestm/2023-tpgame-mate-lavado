@@ -13,7 +13,7 @@ object menu inherits Pantalla (
 	override method down() {puntero.abajo()}
 	override method left() {}
 	override method right() {}
-	override method enter() {cambio.desdeMenu()}
+	override method enter() {cambio.desdeMenu(puntero.apuntaA())}
 	override method r() {game.stop()}
 	override method num1() {musica.bajarVolumen()}
 	override method num2() {musica.subirVolumen()}
@@ -47,7 +47,7 @@ object puntero inherits Visual (position = game.at(12,6), image = "pointer.png")
 }
 
 object controles inherits Pantalla (
-	codigo = 5,
+	codigo = 4,
 	objetos = [pantallaControles] ){
 		
 	// Teclado
@@ -56,7 +56,7 @@ object controles inherits Pantalla (
 	override method left() {}
 	override method right() {}
 	override method enter() {}
-	override method r() {cambio.aMenu()}
+	override method r() {cambio.aMenu(self)}
 	override method num1() {menu.num1()}
 	override method num2() {menu.num2()}
 	override method space() {}
