@@ -6,7 +6,7 @@ import music.*
 
 object menu inherits Pantalla (
 	codigo = 1,
-	objetos = [fondo, cartel, botonJugar, botonTienda, botonControles, puntero] ){
+	objetos = [fondo, cartel, botonJugar, botonTienda, botonControles, puntero, teclas] ){
 		
 	// Teclado
 	override method up() {puntero.arriba()}
@@ -29,6 +29,7 @@ const cartel = new Visual (position = game.at(1,0), image = "logo.png")
 const botonJugar = new Visual (position = game.at(8,7), image = "playButton.png")
 const botonTienda = new Visual (position = game.at(8,5), image = "shopButton.png")
 const botonControles = new Visual (position = game.at(8,3), image = "controlsButton.png")
+const teclas = new Visual (position = game.at(10, 0), image = "teclas.png")
 
 object puntero inherits Visual (position = game.at(12,6), image = "pointer.png") {
 	
@@ -52,7 +53,7 @@ object puntero inherits Visual (position = game.at(12,6), image = "pointer.png")
 
 object controles inherits Pantalla (
 	codigo = 4,
-	objetos = [pantallaControles] ){
+	objetos = [pantallaControles, teclasControles] ){
 		
 	// Teclado
 	override method up() {}
@@ -67,3 +68,5 @@ object controles inherits Pantalla (
 }
 
 const pantallaControles = new Visual (position = game.at(0, 0), image = "fondoControles.jpg")
+
+const teclasControles = new Visual (position = game.at(10, 0), image = "teclasControles.png")

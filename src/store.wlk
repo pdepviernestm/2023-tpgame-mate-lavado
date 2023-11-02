@@ -6,7 +6,7 @@ import menu.*
 
 object tienda inherits Pantalla (
 	codigo = 2,
-	objetos = [fondoTienda, seleccionador] + tablas + [tick, monedasTienda] ){
+	objetos = [fondoTienda, seleccionador] + tablas + [tick, monedasTienda, teclas] ){
 	
 	// Teclado
 	override method up() {seleccionador.arriba()}

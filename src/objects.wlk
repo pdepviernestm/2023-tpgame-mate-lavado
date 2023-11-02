@@ -21,9 +21,9 @@ class ObjetoDeJuego {
 class Obstaculo inherits ObjetoDeJuego {
 	method chocar() {
 		if (not auto.inmunidad()) {
+			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
 			auto.inmunidad(true)
 			game.schedule(1000, {auto.inmunidad(false)})
-			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
 			cartelVidas.actualizar()
 			corazon.aparece()
 			if (auto.vidasEnPartida() == 0) {
