@@ -23,6 +23,6 @@ En la tienda, los jugadores tienen la oportunidad de invertir sus monedas en la 
 
 ## Otros
 
-- k2005
-- Versión de wollok
-- Una vez terminado, no tenemos problemas en que el repositorio sea público
+- Curso: K2005
+- Versión de wollok: 3.0.1
+- Una vez terminado, no tenemos problemas en que el repositorio sea público.
