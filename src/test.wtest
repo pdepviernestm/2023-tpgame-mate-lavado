@@ -31,15 +31,23 @@ describe "Tests de Teclado" {
 	
 	// Controles para menú
 	test "Al tocar down, el puntero apunta al botón tienda y, al tocar down de nuevo, a controles" {
+		var loApuntado
+		menu.mostrar()
         menu.down()
-        assert.equals(puntero.apuntaA(), tienda)
+        loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), tienda)
         menu.down()
-        assert.equals(puntero.apuntaA(), controles)
+        loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), controles)
+        menu.ocultar()
     }
     test "Al estar en el extremo de arriba, no se puede subir" {
         const posInicialPuntero = juego
+        menu.mostrar()
         menu.up()
-        assert.equals(puntero.apuntaA(), posInicialPuntero)
+        const loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), posInicialPuntero)
+        menu.ocultar()
     }
 	
 	// Controles para tienda
@@ -52,28 +60,40 @@ describe "Tests de Teclado" {
 	}
 	test "Al seleccionar una tabla de la primera fila, Mate cambia su apariencia" {
 		const imagenInicial = auto.image()
+		var imagenAnterior = auto.image()
+		tienda.mostrar()
 		monedasTienda.agregar(1000)
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
 		tienda.enter()
-		assert.notEquals(imagenInicial, auto.image())
+		assert.notEquals(imagenAnterior, auto.image())
+		imagenAnterior = auto.image()
 		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
 		tienda.enter()
-		assert.notEquals(imagenInicial, auto.image())
-		tienda.right()
+		assert.notEquals(imagenAnterior, auto.image())
 		tienda.enter()
-		assert.notEquals(imagenInicial, auto.image())
+		assert.equals(imagenInicial, auto.image())
+		tienda.ocultar()
 	}
 	test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras" {
 		const agilidadInicial = auto.agilidad()
 		const vidas = auto.vidas()
 		const tormentaInicial = tormenta.image()
+		tienda.mostrar()
+		seleccionador.position(tabla1.position())
 		monedasTienda.agregar(1000)
+		
 		tienda.down()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
 		tienda.enter()
 		assert.notEquals(tormenta.image(), tormentaInicial)
+		
 		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
 		tienda.enter()
 		assert.that(agilidadInicial < auto.agilidad())
 		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
 		tienda.enter()
 		assert.that(vidas < auto.vidas())
 	}
