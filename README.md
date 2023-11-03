@@ -1,5 +1,7 @@
 # Tow Mater
 
+![274767263-0c295a92-76d3-4de1-892d-f44964e70d11](https://github.com/pdepviernestm/2023-tpgame-mate-lavado/assets/129192258/cccc25e0-39ad-4491-b3a9-cc162ff6ec1a)
+
 ## Equipo de desarrollo
 
 - Carbia, Gabriel
@@ -10,7 +12,13 @@
 
 ## Capturas
 
-![274767263-0c295a92-76d3-4de1-892d-f44964e70d11](https://github.com/pdepviernestm/2023-tpgame-mate-lavado/assets/129192258/cccc25e0-39ad-4491-b3a9-cc162ff6ec1a)
+![menu](https://github.com/pdepviernestm/2023-tpgame-mate-lavado/assets/129192258/fcf21448-26b7-4925-b7b0-e208ab744234)
+
+![tienda](https://github.com/pdepviernestm/2023-tpgame-mate-lavado/assets/129192258/92fcd3ae-3a12-452f-bd0f-09bb80ff50fc)
+
+![juego](https://github.com/pdepviernestm/2023-tpgame-mate-lavado/assets/129192258/a2285def-4ce4-4216-8918-69d8c0f0e690)
+
+
 
 ## Reglas de Juego / Instrucciones
 
