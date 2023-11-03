@@ -124,33 +124,30 @@ object auto {
 	method izquierda() {
 		if (carril > 1 && not doblando) {
 			doblando = true
-			position = position.left(1)
-			hitboxAuto.actualizar()
-			if (vidasEnPartida > 0) {
-				game.schedule(250 / agilidad, {
-					position = position.left(1)
-					hitboxAuto.actualizar()
-					carril = carril - 1
-					doblando = false
-				})
-			}
+			self.doblar(-1)
+			game.schedule(250 / agilidad, {
+				self.doblar(-1)
+				carril = carril - 1
+				doblando = false
+			})
 		}
 	}
 	
 	method derecha() {
 		if (carril < 3 && not doblando) {
 			doblando = true
-			position = position.right(1)
-			hitboxAuto.actualizar()
-			if (vidasEnPartida > 0) {
-				game.schedule(250 / agilidad, {
-					position = position.right(1)
-					hitboxAuto.actualizar()
-					carril = carril + 1
-					doblando = false
-				})
-			}
+			self.doblar(1)
+			game.schedule(250 / agilidad, {
+				self.doblar(1)
+				carril = carril + 1
+				doblando = false
+			})
 		}
+	}
+	
+	method doblar(cantidad) {
+		position = position.right(cantidad)
+		hitboxAuto.actualizar()
 	}
 	
 	method tocarBocina() {
@@ -192,14 +189,14 @@ object generador {
 	var property lugaresLibres
 	
 	method generarObjetos() {
+		lugaresLibres = [4,5,6,7,8]
 		barriles.get(contador).aparecer()
 		contador++
+		self.actualizarLugares(contador - 1)
 		if (contador == barriles.size() - 1) {
-			lugaresLibres = [4,5,6,7,8]
-			self.actualizarLugares(contador - 1)
-			barriles.get(contador).aparecer(lugaresLibres.anyOne())
+			barriles.get(contador).aparecer(lugaresLibres)
 			self.actualizarLugares(contador)
-			vacas.get(ciclos%vacas.size()).aparecer()
+			vacas.get(ciclos%vacas.size()).aparecer(lugaresLibres)
 			contador = 0
 			ciclos++
 		}
@@ -207,9 +204,7 @@ object generador {
 	}
 	
 	method generarMonedas() {
-		lugaresLibres = [4,6,8]
-		self.actualizarLugares(contador - 1)
-		monedasJuego.get(contador - 1).aparecer(lugaresLibres.anyOne())
+		monedasJuego.get(contador - 1).aparecer(lugaresLibres)
 	}
 	
 	method actualizarLugares(_contador) {
@@ -231,14 +226,14 @@ object tormenta {
 		if (0.randomUpTo(1) < 0.34) {
 			position = game.at(0, 10)
 			game.onTick(100, "Aparece tormenta", {position = position.down(1)})
-			game.schedule(500, {game.removeTickEvent("Aparece tormenta")})
-			game.schedule(5400, {self.desaparecer()})
+			game.schedule(600, {game.removeTickEvent("Aparece tormenta")})
+			game.schedule(5500, {self.desaparecer()})
 		}
 	}
 	
 	method desaparecer() {
 		game.onTick(100, "Desaparece tormenta", {position = position.up(1)})
-		game.schedule(500, {game.removeTickEvent("Desaparece tormenta")})
+		game.schedule(600, {game.removeTickEvent("Desaparece tormenta")})
 	}
 }
 
