@@ -70,6 +70,7 @@ object transicion {
 	method image() = "transicion.png"
 	
 	method realizar(anterior, siguiente) {
+		enPantalla.hay(estadoIntermedio)
 		game.addVisual(self)
 		game.onTick(25, "Transicion", {position = position.right(1)})
 		game.schedule(25 * 20, {

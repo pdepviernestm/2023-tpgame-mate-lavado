@@ -32,7 +32,7 @@ object juego inherits Pantalla (
 	}
 	
 	method empezarEventosActualizables() {
-		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza() fondoJuego.actualizar()})
+		game.onTick(auto.velocidad(), "Avanza auto", {auto.avanza()})
 		game.onTick(auto.velocidad()/10, "Avanza contador", {contador.avanza()})
 		game.onTick(auto.velocidad() * 4, "Generar objetos", {generador.generarObjetos()})
 		game.onTick(auto.velocidad() * 5, "Aparecen cactus", {fondoJuego.apareceCactus()})
@@ -63,8 +63,11 @@ object juego inherits Pantalla (
 object fondoJuego {
 	var contador = 0
 	
-	method actualizar() {
-		[ruta1, ruta2].forEach{r => if (r.position().y() <= -10) r.position(game.at(0, 9))}
+	method mover() {
+		rutas.forEach{r =>
+			if (r.position().y() > -10) r.position(r.position().down(1))
+			else r.position(game.at(0, 9))
+		}
 	}
 	
 	method reiniciar() {
@@ -79,7 +82,8 @@ object fondoJuego {
 	}
 }
 
-const fondoJ = [ruta1, ruta2] + variosCactus
+const fondoJ = rutas + variosCactus
+const rutas = [ruta1, ruta2]
 const ruta1 = new Visual (position = game.at(0,-1), image = "ruta.png")
 const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
 const variosCactus = [new Cactus(), new Cactus(), new Cactus(), new Cactus()]
@@ -160,7 +164,10 @@ object auto {
 		}
 	}
 	
-	method avanza() {(fondoJ + obstaculos + monedasJuego).forEach{obj => obj.position(obj.position().down(1))}}
+	method avanza() {
+		fondoJuego.mover()
+		(variosCactus + obstaculos + monedasJuego).forEach{obj => obj.position(obj.position().down(1))}
+	}
 }
 
 object hitboxAuto {
