@@ -275,12 +275,7 @@ object corazon {
 		position = position.down(1)
 		game.onTick(100, "Aparece corazon", {position = position.down(1)})
 		game.schedule(200, {game.removeTickEvent("Aparece corazon")})
-		game.schedule(700, {self.desaparece()})
-	}
-	
-	method desaparece() {
-		game.onTick(100, "Desaparece corazon", {position = position.up(1)})
-		game.schedule(300, {game.removeTickEvent("Desaparece corazon")})
+		game.schedule(1000, {self.reiniciar()})
 	}
 }
 
