@@ -32,6 +32,10 @@ object monedasTienda {
 
 const fondoTienda = new Visual (position = game.origin(), image = "fondoTienda.jpg")
 
+
+
+
+
 class Tabla {
 	const identificador
 	const property precio
@@ -42,108 +46,27 @@ class Tabla {
 	
 	method comprar() {estado.comprar(self)}
 	
+	method trasComprar() {}
+	
 	method efecto()
 }
 
 class TablaDeAspecto inherits Tabla {
-	const aspectoOriginal = auto.image()
-	const nuevoAspecto
+	const property aspectoOriginal = auto.image()
+	const property nuevoAspecto
 	
-	override method comprar() {}
+	override method trasComprar() {self.efecto()}
 	
 	override method efecto() {
-		if (tick.position() == self.position()) {
+		if (tick.position() == self.position().up(1)) {
 			tick.position(game.at(15,10))
 			auto.image(aspectoOriginal)
 		}
 		else {
-			tick.position(self.position())
+			tick.position(self.position().up(1))
 			auto.image(nuevoAspecto)
 		}
 	}
-}
-
-const tabla1 = new TablaDeAspecto (
-	identificador = 1,
-	precio = 15,
-	position = game.at(1,5),
-	nuevoAspecto = "mateSombrero.png" )
-	
-const tabla2 = new TablaDeAspecto (
-	identificador = 2,
-	precio = 30,
-	position = game.at(5,5),
-	nuevoAspecto = "mateAzul.png" )
-
-const tabla3 = new TablaDeAspecto (
-	identificador = 3,
-	precio = 100,
-	position = game.at(9,5),
-	nuevoAspecto = "rayoMcqueen.png" )
-
-object tabla4 inherits Tabla (
-	identificador = 4,
-	precio = 45,
-	position = game.at(1,1) ){
-	override method efecto() {tormenta.image("tormentaTraslucida.png")}
-}
-
-object tabla5 inherits Tabla (
-	identificador = 5,
-	precio = 60,
-	position = game.at(5,1) ){
-	override method efecto() {auto.aumentaAgilidad()}
-}
-
-object tabla6 inherits Tabla (
-	identificador = 6,
-	precio = 75,
-	position = game.at(9,1) ){
-	override method efecto() {auto.vidaExtra()}
-}
-
-const tablas = [tabla1, tabla2, tabla3, tabla4, tabla5, tabla6]
-
-object seleccionador {
-	var property position = game.at(1,4)
-	var property image = "seleccionador.png"
-	
-	var apuntaA = 0
-	method apuntaA() = tablas.get(apuntaA)
-
-	method arriba() {
-		if (position.y() == 0) {
-			position = game.at(position.x(), 4)
-			apuntaA = apuntaA - 3
-		}
-	}
-	
-	method abajo() {
-		if (position.y() == 4) {
-			position = game.at(position.x(), 0)
-			apuntaA = apuntaA + 3
-		}
-	}
-	
-	method derecha() {
-		if (position.x() < 9) {
-			position = game.at(position.x() + 4, position.y())
-			apuntaA = apuntaA + 1
-		}
-	}
-	
-	method izquierda() {
-		if (position.x() > 1) {
-			position = game.at(position.x() - 4, position.y())
-			apuntaA = apuntaA - 1
-		}
-	}
-}
-
-object comprado {
-	method comprar(seleccionado) {}
-	
-	method descripcion() = "comp"
 }
 
 object noComprado {
@@ -156,6 +79,82 @@ object noComprado {
 	}
 	
 	method descripcion() = ""
+}
+
+object comprado {
+	method comprar(seleccionado) {seleccionado.trasComprar()}
+	
+	method descripcion() = "comp"
+}
+
+const tabla1 = new TablaDeAspecto (
+	identificador = 1,
+	precio = 15,
+	position = game.at(1,4),
+	nuevoAspecto = "mateSombrero.png" )
+	
+const tabla2 = new TablaDeAspecto (
+	identificador = 2,
+	precio = 30,
+	position = game.at(5,4),
+	nuevoAspecto = "mateAzul.png" )
+
+const tabla3 = new TablaDeAspecto (
+	identificador = 3,
+	precio = 100,
+	position = game.at(9,4),
+	nuevoAspecto = "rayoMcqueen.png" )
+
+object tabla4 inherits Tabla (
+	identificador = 4,
+	precio = 45,
+	position = game.at(1,0) ){
+	override method efecto() {tormenta.image("tormentaTraslucida.png")}
+}
+
+object tabla5 inherits Tabla (
+	identificador = 5,
+	precio = 60,
+	position = game.at(5,0) ){
+	override method efecto() {auto.aumentaAgilidad()}
+}
+
+object tabla6 inherits Tabla (
+	identificador = 6,
+	precio = 75,
+	position = game.at(9,0) ){
+	override method efecto() {auto.vidaExtra()}
+}
+
+const tablas = [tabla1, tabla2, tabla3, tabla4, tabla5, tabla6]
+
+object seleccionador {
+	var property position = game.at(1,4)
+	var property image = "seleccionador.png"
+	
+	var property apuntaA
+	
+	method configurar() {
+		game.addVisual(self)
+		game.onCollideDo(self, {tabla => self.apuntaA(tabla)})
+		game.removeVisual(self)
+	}
+
+	method arriba() {
+		if (position.y() < tabla1.position().y()) position = position.up(4)
+	}
+	
+	method abajo() {
+		if (position.y() > tabla6.position().y()) position = position.down(4)
+	}
+	
+	method derecha() {
+		if (position.x() < tabla6.position().x()) position = position.right(4)
+	}
+	
+	method izquierda() {
+		if (position.x() > tabla1.position().x()) position = position.left(4)
+	}
 }
 
 object tick {

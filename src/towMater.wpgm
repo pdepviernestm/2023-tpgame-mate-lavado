@@ -5,15 +5,22 @@ import music.*
 import intro.*
 import gameplay.*
 import menu.*
+import store.*
 
 program ejecutarJuego {
 	
-	//	CONFIG
+	//	CONFIG GAME
 	
 	game.cellSize(80)
 	game.title("Tow Mater")
 	game.width(15)
   	game.height(10)
+  	
+  	// CONFIG OBJETOS
+  	
+  	auto.configurar()
+	puntero.configurar()
+	seleccionador.configurar()
   	
   	// TECLADO
   	
@@ -22,8 +29,6 @@ program ejecutarJuego {
   	// START
   	
 	intro.mostrar()
-	auto.configurar()
-	puntero.configurar()
 	game.schedule(1000, {bocina.iniciar()})
 	game.schedule(3000, {cambio.entre(intro, menu)})
 	game.start()

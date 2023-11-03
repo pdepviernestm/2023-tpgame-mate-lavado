@@ -36,10 +36,10 @@ const botonJugar = new Boton (position = game.at(8,6), image = "playButton.png",
 const botonTienda = new Boton (position = game.at(8,4), image = "shopButton.png", cualEs = tienda)
 const botonControles = new Boton (position = game.at(8,2), image = "controlsButton.png", cualEs = controles)
 
-object puntero inherits Visual (position = game.at(8,6), image = "pointer.png") {
-	
+object puntero {
+	var property position = game.at(8,6)
+	const property image = "pointer.png"
 	var property apuntaA = juego
-	var fila = 0
 	
 	method configurar() {
 		game.addVisual(self)
@@ -48,16 +48,10 @@ object puntero inherits Visual (position = game.at(8,6), image = "pointer.png") 
 	}
 	
 	method arriba(){
-		if(fila > 0) {
-			fila--
-			self.position(self.position().up(2))
-		}
+		if(position.y() < botonJugar.position().y()) self.position(self.position().up(2))
 	}
 	
 	method abajo(){
-		if(fila < 2) {
-			fila++
-			self.position(self.position().down(2))
-		}
+		if(position.y() > botonControles.position().y()) self.position(self.position().down(2))
 	}
 }
