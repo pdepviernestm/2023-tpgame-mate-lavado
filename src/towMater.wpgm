@@ -16,7 +16,7 @@ program ejecutarJuego {
 	game.width(15)
   	game.height(10)
   	
-  	// CONFIG OBJETOS
+  	// CONFIG COLISION ENTRE OBJETOS
   	
   	auto.configurar()
 	puntero.configurar()

@@ -66,8 +66,8 @@ object musica {
 }
 
 object bocina {
-	const sonido = game.sound("Horn.mp3")
-	var property sonando = false
+	const property sonido = game.sound("Horn.mp3")
+	var property estado = noSonando
 	
 	method iniciar() {
 		sonido.volume(0)
@@ -76,14 +76,20 @@ object bocina {
 		game.schedule(1900, {sonido.pause() sonido.volume(0.05)})
 	}
 	
+	method tocar() {estado.tocar()}
+}
+
+object sonando {
+	method tocar() {}
+}
+
+object noSonando {
 	method tocar() {
-		if (not sonando) {
-			sonando = true
-			sonido.resume()
-			game.schedule(1800, {
-				sonido.pause()
-				sonando = false
-			})
-		}
+		bocina.estado(sonando)
+		bocina.sonido().resume()
+		game.schedule(1800, {
+			bocina.sonido().pause()
+			bocina.estado(self)
+		})
 	}
 }

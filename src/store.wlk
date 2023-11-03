@@ -32,10 +32,6 @@ object monedasTienda {
 
 const fondoTienda = new Visual (position = game.origin(), image = "fondoTienda.jpg")
 
-
-
-
-
 class Tabla {
 	const identificador
 	const property precio

@@ -106,8 +106,8 @@ object auto {
 	var property velocidad
 	var property vidas = 1
 	var property vidasEnPartida
-	var doblando = false
 	var property estadoInmunidad = sinInmunidad
+	var property estadoDoblando = noEstaDoblando
 	
 	method configurar() {
 		[hitboxAuto, self].forEach{obj =>
@@ -125,31 +125,11 @@ object auto {
 		vidasEnPartida = vidas
 	}
 	
-	method izquierda() {
-		if (carril > 1 && not doblando) {
-			doblando = true
-			self.doblar(-1)
-			game.schedule(250 / agilidad, {
-				self.doblar(-1)
-				carril = carril - 1
-				doblando = false
-			})
-		}
-	}
+	method izquierda() {if (carril > 1) estadoDoblando.doblar(-1)}
 	
-	method derecha() {
-		if (carril < 3 && not doblando) {
-			doblando = true
-			self.doblar(1)
-			game.schedule(250 / agilidad, {
-				self.doblar(1)
-				carril = carril + 1
-				doblando = false
-			})
-		}
-	}
+	method derecha() {if (carril < 3) estadoDoblando.doblar(1)}
 	
-	method doblar(cantidad) {
+	method mover(cantidad) {
 		position = position.right(cantidad)
 		hitboxAuto.actualizar()
 	}
@@ -200,6 +180,22 @@ object sinInmunidad {
 
 object conInmunidad {
 	method chocar() {}
+}
+
+object noEstaDoblando {
+	method doblar(cantidad) {
+		auto.estadoDoblando(siEstaDoblando)
+		auto.mover(cantidad)
+		game.schedule(250 / auto.agilidad(), {
+			auto.mover(cantidad)
+			auto.carril(auto.carril() + cantidad)
+			auto.estadoDoblando(self)
+		})
+	}
+}
+
+object siEstaDoblando {
+	method doblar(cantidad) {}
 }
 
 const obstaculos = barriles + vacas
