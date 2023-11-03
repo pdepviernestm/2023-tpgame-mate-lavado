@@ -26,7 +26,6 @@ program ejecutarJuego {
 	game.schedule(1000, {bocina.iniciar()})
 	game.schedule(3000, {
 		cambio.entre(intro, menu)
-		musica.reproducir()
 	})
 	game.start()
 }

@@ -14,8 +14,18 @@ class Visual {
 class Pantalla {
 	const property codigo
 	const objetos
-	method mostrar() {objetos.forEach{obj => game.addVisual(obj)}}
-	method ocultar() {objetos.forEach{obj => game.removeVisual(obj)}}
+	method mostrar() {
+		objetos.forEach{obj => game.addVisual(obj)}
+		self.musicaAlMostrar()
+	}
+	method ocultar() {
+		objetos.forEach{obj => game.removeVisual(obj)}
+		self.musicaAlOcultar()
+	}
+	
+	method musicaAlMostrar() {}
+	
+	method musicaAlOcultar() {}
 	
 	// Teclado
 	method up() {}

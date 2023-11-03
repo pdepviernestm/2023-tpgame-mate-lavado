@@ -13,11 +13,7 @@ object tienda inherits Pantalla (
 	override method down() {seleccionador.abajo()}
 	override method left() {seleccionador.izquierda()}
 	override method right() {seleccionador.derecha()}
-	override method enter() {
-		const seleccionado = seleccionador.apuntaA()
-		if (not seleccionado.comprado()) {seleccionado.comprar()}
-		else if (seleccionado.esAspecto()) {seleccionado.efecto()}
-	}
+	override method enter() {seleccionador.apuntaA().comprar()}
 	override method r() {cambio.entre(self, menu)}
 	override method num1() {menu.num1()}
 	override method num2() {menu.num2()}
@@ -42,17 +38,17 @@ class Tabla {
 	const tablaComprada
 	const property esAspecto = false
 	
-	const precio
-	var property comprado = false
+	const property precio
+	var property estado = noComprado
 	
 	method comprar() {
 		if (monedasTienda.cantidad() >= precio) {
-			monedasTienda.descontar(precio)
-			comprado = true
+			estado.comprar(self)
 			self.efecto()
-			image = tablaComprada
 		}
 	}
+	
+	method actualizarImagen() {image = tablaComprada}
 	
 	method efecto()
 }
@@ -60,6 +56,9 @@ class Tabla {
 class TablaDeAspecto inherits Tabla (esAspecto = true) {
 	const aspectoOriginal = auto.image()
 	const nuevoAspecto
+	
+	//   override method image() = estado.descripcion() + ".png"
+	override method comprar() {}
 	
 	override method efecto() {
 		if (tick.position() == self.position()) {
@@ -153,6 +152,18 @@ object seleccionador {
 			position = game.at(position.x() - 4, position.y())
 			apuntaA = apuntaA - 1
 		}
+	}
+}
+
+object comprado {
+	method comprar() {}
+}
+
+object noComprado {
+	method comprar(seleccionado) {
+		seleccionado.estado(comprado)
+		monedasTienda.descontar(seleccionado.precio())
+		seleccionado.actualizarImagen()
 	}
 }
 
