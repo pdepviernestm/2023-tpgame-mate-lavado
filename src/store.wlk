@@ -33,31 +33,22 @@ object monedasTienda {
 const fondoTienda = new Visual (position = game.origin(), image = "fondoTienda.jpg")
 
 class Tabla {
-	var property position
-	var property image
-	const tablaComprada
-	const property esAspecto = false
-	
+	const identificador
 	const property precio
 	var property estado = noComprado
 	
-	method comprar() {
-		if (monedasTienda.cantidad() >= precio) {
-			estado.comprar(self)
-			self.efecto()
-		}
-	}
+	var property position
+	method image() = "Tabla" + identificador.toString() + estado.descripcion() + ".png"
 	
-	method actualizarImagen() {image = tablaComprada}
+	method comprar() {estado.comprar(self)}
 	
 	method efecto()
 }
 
-class TablaDeAspecto inherits Tabla (esAspecto = true) {
+class TablaDeAspecto inherits Tabla {
 	const aspectoOriginal = auto.image()
 	const nuevoAspecto
 	
-	//   override method image() = estado.descripcion() + ".png"
 	override method comprar() {}
 	
 	override method efecto() {
@@ -73,47 +64,41 @@ class TablaDeAspecto inherits Tabla (esAspecto = true) {
 }
 
 const tabla1 = new TablaDeAspecto (
-	position = game.at(1,5),
-	image = "Tabla1.png",
-	tablaComprada = "Tabla1comp.png",
+	identificador = 1,
 	precio = 15,
+	position = game.at(1,5),
 	nuevoAspecto = "mateSombrero.png" )
 	
 const tabla2 = new TablaDeAspecto (
-	position = game.at(5,5),
-	image = "Tabla2.png",
-	tablaComprada = "Tabla2comp.png",
+	identificador = 2,
 	precio = 30,
+	position = game.at(5,5),
 	nuevoAspecto = "mateAzul.png" )
 
 const tabla3 = new TablaDeAspecto (
-	position = game.at(9,5),
-	image = "Tabla3.png",
-	tablaComprada = "Tabla3comp.png",
+	identificador = 3,
 	precio = 100,
+	position = game.at(9,5),
 	nuevoAspecto = "rayoMcqueen.png" )
 
 object tabla4 inherits Tabla (
-	position = game.at(1,1),
-	image = "Tabla4.png",
-	tablaComprada = "Tabla4comp.png",
-	precio = 45 ){
+	identificador = 4,
+	precio = 45,
+	position = game.at(1,1) ){
 	override method efecto() {tormenta.image("tormentaTraslucida.png")}
 }
 
 object tabla5 inherits Tabla (
-	position = game.at(5,1),
-	image = "Tabla5.png",
-	tablaComprada = "Tabla5comp.png",
-	precio = 60 ){
+	identificador = 5,
+	precio = 60,
+	position = game.at(5,1) ){
 	override method efecto() {auto.aumentaAgilidad()}
 }
 
 object tabla6 inherits Tabla (
-	position = game.at(9,1),
-	image = "Tabla6.png",
-	tablaComprada = "Tabla6comp.png",
-	precio = 75 ){
+	identificador = 6,
+	precio = 75,
+	position = game.at(9,1) ){
 	override method efecto() {auto.vidaExtra()}
 }
 
@@ -156,15 +141,21 @@ object seleccionador {
 }
 
 object comprado {
-	method comprar() {}
+	method comprar(seleccionado) {}
+	
+	method descripcion() = "comp"
 }
 
 object noComprado {
 	method comprar(seleccionado) {
-		seleccionado.estado(comprado)
-		monedasTienda.descontar(seleccionado.precio())
-		seleccionado.actualizarImagen()
+		if (monedasTienda.cantidad() >= seleccionado.precio()) {
+			seleccionado.estado(comprado)
+			seleccionado.efecto()
+			monedasTienda.descontar(seleccionado.precio())
+		}
 	}
+	
+	method descripcion() = ""
 }
 
 object tick {

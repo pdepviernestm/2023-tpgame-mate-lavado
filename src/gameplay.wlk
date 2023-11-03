@@ -20,6 +20,9 @@ object juego inherits Pantalla (
 		super()
 	}
 	
+	override method musicaAlMostrar() {musica.pausar()}
+	override method musicaAlOcultar() {musica.reanudar()}
+	
 	method inicializar() {
 		[contador, fondoJuego, generador, auto, corazon, cartelVidas].forEach{obj => obj.reiniciar()}
 	}

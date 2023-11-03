@@ -5,6 +5,7 @@ import menu.*
 import store.*
 import objects.*
 import gameplay.*
+import controls.*
 
 describe "Tests de Teclado" {
 	

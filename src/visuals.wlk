@@ -58,20 +58,13 @@ object enPantalla {
 
 object cambio {
 	method entre(anterior, siguiente) {
-		self.controlarMusica(anterior, siguiente)
 		anterior.ocultar()
 		siguiente.mostrar()
 		enPantalla.hay(siguiente)
 	}
 	
 	method conTransicionEntre(anterior, siguiente) {
-		self.controlarMusica(anterior, siguiente)
 		transicion.realizar(anterior, siguiente)
-	}
-	
-	method controlarMusica(anterior, siguiente) {
-		if (siguiente.codigo() == juego.codigo()) {musica.pausar()}
-		if (anterior.codigo() == juego.codigo()) {musica.reanudar()}
 	}
 }
 

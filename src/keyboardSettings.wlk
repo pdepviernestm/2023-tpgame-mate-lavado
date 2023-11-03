@@ -6,7 +6,6 @@ import gameplay.*
 import music.*
 
 object teclado {
-	
 	method configurate() {
 		keyboard.up().onPressDo {enPantalla.hay().up()}
 		keyboard.down().onPressDo {enPantalla.hay().down()}

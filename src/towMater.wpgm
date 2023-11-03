@@ -23,9 +23,8 @@ program ejecutarJuego {
   	
 	intro.mostrar()
 	auto.configurar()
+	puntero.configurar()
 	game.schedule(1000, {bocina.iniciar()})
-	game.schedule(3000, {
-		cambio.entre(intro, menu)
-	})
+	game.schedule(3000, {cambio.entre(intro, menu)})
 	game.start()
 }
