@@ -54,14 +54,8 @@ object juego inherits Pantalla (
 	}
 	
 	// Teclado
-	override method up() {}
-	override method down() {}
 	override method left() {auto.izquierda()}
 	override method right() {auto.derecha()}
-	override method enter() {}
-	override method r() {}
-	override method num1() {}
-	override method num2() {}
 	override method space() {auto.tocarBocina()}
 }
 

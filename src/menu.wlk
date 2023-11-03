@@ -11,8 +11,6 @@ object menu inherits Pantalla (
 	// Teclado
 	override method up() {puntero.arriba()}
 	override method down() {puntero.abajo()}
-	override method left() {}
-	override method right() {}
 	override method enter() {
 		if (puntero.apuntaA().codigo() == juego.codigo())
 			cambio.conTransicionEntre(self, juego)
@@ -21,7 +19,6 @@ object menu inherits Pantalla (
 	override method r() {game.stop()}
 	override method num1() {musica.bajarVolumen()}
 	override method num2() {musica.subirVolumen()}
-	override method space() {}
 }
 
 const fondo = new Visual (position = game.origin(), image = "background.jpg")
@@ -56,15 +53,9 @@ object controles inherits Pantalla (
 	objetos = [pantallaControles, teclasControles] ){
 		
 	// Teclado
-	override method up() {}
-	override method down() {}
-	override method left() {}
-	override method right() {}
-	override method enter() {}
 	override method r() {cambio.entre(self, menu)}
 	override method num1() {menu.num1()}
 	override method num2() {menu.num2()}
-	override method space() {}
 }
 
 const pantallaControles = new Visual (position = game.at(0, 0), image = "fondoControles.png")

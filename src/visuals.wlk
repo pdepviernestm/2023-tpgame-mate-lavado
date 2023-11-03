@@ -18,15 +18,15 @@ class Pantalla {
 	method ocultar() {objetos.forEach{obj => game.removeVisual(obj)}}
 	
 	// Teclado
-	method up()
-	method down()
-	method left()
-	method right()
-	method enter()
-	method r()
-	method num1()
-	method num2()
-	method space()
+	method up() {}
+	method down() {}
+	method left() {}
+	method right() {}
+	method enter() {}
+	method r() {}
+	method num1() {}
+	method num2() {}
+	method space() {}
 }
 
 //--------------------- LO QUE SE MUESTRA EN PANTALLA ---------------------
@@ -91,13 +91,4 @@ object transicion {
 object estadoIntermedio inherits Pantalla (
 	codigo = 5,
 	objetos = [] ){
-	override method up() {}
-	override method down() {}
-	override method left() {}
-	override method right() {}
-	override method enter() {}
-	override method r() {}
-	override method num1() {}
-	override method num2() {}
-	override method space() {}
 }
