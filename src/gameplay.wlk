@@ -4,6 +4,7 @@ import intro.*
 import music.*
 import store.*
 import objects.*
+import menu.*
 
 object juego inherits Pantalla (
 	codigo = 3,
@@ -56,6 +57,12 @@ object juego inherits Pantalla (
 		self.empezarEventosActualizables()
 	}
 	
+	method finalizar() {
+		self.terminarEventos()
+		enPantalla.hay(estadoIntermedio)
+		game.schedule(3000, {cambio.conTransicionEntre(self, menu)})
+	}
+	
 	// Teclado
 	override method left() {auto.izquierda()}
 	override method right() {auto.derecha()}
@@ -100,7 +107,7 @@ object auto {
 	var property vidas = 1
 	var property vidasEnPartida
 	var doblando = false
-	var property inmunidad = false
+	var property estadoInmunidad = sinInmunidad
 	
 	method configurar() {
 		[hitboxAuto, self].forEach{obj =>
@@ -164,6 +171,13 @@ object auto {
 	}
 	
 	method avanza() {([fondoJuego] + obstaculos + monedasJuego).forEach{obj => obj.mover()}}
+	
+	method alChocar() {estadoInmunidad.chocar()}
+	
+	method seHaceInmune() {
+		estadoInmunidad = conInmunidad
+		game.schedule(1000, {estadoInmunidad = sinInmunidad})
+	}
 }
 
 object hitboxAuto {
@@ -172,6 +186,20 @@ object hitboxAuto {
 	method actualizar() {
 		position = auto.position().up(1)
 	}
+}
+
+object sinInmunidad {
+	method chocar() {
+		auto.vidasEnPartida(auto.vidasEnPartida()-1)
+		auto.seHaceInmune()
+		cartelVidas.actualizar()
+		corazon.aparece()
+		if (auto.vidasEnPartida() == 0) juego.finalizar()
+	}
+}
+
+object conInmunidad {
+	method chocar() {}
 }
 
 const obstaculos = barriles + vacas
@@ -277,7 +305,7 @@ object corazon {
 }
 
 object cartelVidas {
-	const property position = game.at(0,7)
+	const property position = game.at(0,6)
 	var property image
 	
 	method actualizar() {

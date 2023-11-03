@@ -25,22 +25,7 @@ class Chocable inherits ObjetoDeJuego{
 }
 
 class Obstaculo inherits Chocable {
-	override method chocar() {
-		if (not auto.inmunidad()) {
-			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
-			auto.inmunidad(true)
-			game.schedule(1000, {auto.inmunidad(false)})
-			cartelVidas.actualizar()
-			corazon.aparece()
-			if (auto.vidasEnPartida() == 0) {
-				juego.terminarEventos()
-				enPantalla.hay(estadoIntermedio)
-				game.schedule(3000, {
-					cambio.conTransicionEntre(juego, menu)
-				})
-			}
-		}
-	}
+	override method chocar() {auto.alChocar()}
 }
 
 class Barril inherits Obstaculo (
