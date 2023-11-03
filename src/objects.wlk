@@ -16,10 +16,16 @@ class ObjetoDeJuego {
 	}
 	
 	method aparecer() {self.aparecer(posicionesPosibles.anyOne())}
+	
+	method mover() {position = position.down(1)}
 }
 
-class Obstaculo inherits ObjetoDeJuego {
-	method chocar() {
+class Chocable inherits ObjetoDeJuego{
+	method chocar()
+}
+
+class Obstaculo inherits Chocable {
+	override method chocar() {
 		if (not auto.inmunidad()) {
 			auto.vidasEnPartida(auto.vidasEnPartida() - 1)
 			auto.inmunidad(true)
@@ -29,7 +35,7 @@ class Obstaculo inherits ObjetoDeJuego {
 			if (auto.vidasEnPartida() == 0) {
 				juego.terminarEventos()
 				enPantalla.hay(estadoIntermedio)
-				game.schedule(2000, {
+				game.schedule(3000, {
 					cambio.conTransicionEntre(juego, menu)
 				})
 			}
@@ -60,11 +66,11 @@ class Vaca inherits Obstaculo (
 	}
 }
 
-class Moneda inherits ObjetoDeJuego (
+class Moneda inherits Chocable (
 	image = "moneda.png",
 	posicionesPosibles = [4,5,6,7,8] ) {
 		
-	method chocar() {
+	override method chocar() {
 		position = game.at(20, 10)
 		monedasTienda.agregar(1)
 	}

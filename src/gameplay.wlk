@@ -7,12 +7,17 @@ import objects.*
 
 object juego inherits Pantalla (
 	codigo = 3,
-	objetos = fondoJ + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, cartelContador, contador, corazon, cartelVidas] ){
+	objetos = rutas + variosCactus + obstaculos + monedasJuego + [hitboxAuto, auto, tormenta, corazon, cartelVidas] + informacion){
 	
 	override method mostrar() {
 		super()
 		self.inicializar()
 		self.empezarEventos()
+	}
+	
+	override method ocultar() {
+		if (contador.metros() > mejorPuntuacion.metros()) mejorPuntuacion.metros(contador.metros())
+		super()
 	}
 	
 	method inicializar() {
@@ -68,6 +73,7 @@ object fondoJuego {
 			if (r.position().y() > -10) r.position(r.position().down(1))
 			else r.position(game.at(0, 9))
 		}
+		variosCactus.forEach{obj => obj.position(obj.position().down(1))}
 	}
 	
 	method reiniciar() {
@@ -82,7 +88,6 @@ object fondoJuego {
 	}
 }
 
-const fondoJ = rutas + variosCactus
 const rutas = [ruta1, ruta2]
 const ruta1 = new Visual (position = game.at(0,-1), image = "ruta.png")
 const ruta2 = new Visual (position = game.at(0,9), image = "ruta.png")
@@ -164,10 +169,7 @@ object auto {
 		}
 	}
 	
-	method avanza() {
-		fondoJuego.mover()
-		(variosCactus + obstaculos + monedasJuego).forEach{obj => obj.position(obj.position().down(1))}
-	}
+	method avanza() {([fondoJuego] + obstaculos + monedasJuego).forEach{obj => obj.mover()}}
 }
 
 object hitboxAuto {
@@ -230,7 +232,7 @@ object tormenta {
 			position = game.at(0, 10)
 			game.onTick(100, "Aparece tormenta", {position = position.down(1)})
 			game.schedule(500, {game.removeTickEvent("Aparece tormenta")})
-			game.schedule(5500, {self.desaparecer()})
+			game.schedule(5400, {self.desaparecer()})
 		}
 	}
 	
@@ -240,16 +242,31 @@ object tormenta {
 	}
 }
 
-const cartelContador = new Visual (position = game.at(11,9), image = "contador.png")
+const informacion = [cartelContador, contador, mejorPuntuacion, monedasTiendaEnJuego]
+
+const cartelContador = new Visual (position = game.at(11,5), image = "contador.png")
 
 object contador {
-	var property position = game.at(13,9)
+	var property position = game.at(13,8)
 	var property metros = 0
 	
 	method text() = metros.toString()
-	method textColor() = "FFFFFF"
+	method textColor() = "744F3A"
 	method avanza() {metros++}
 	method reiniciar() {metros = 0}
+}
+
+object mejorPuntuacion {
+	var property position = game.at(13,7)
+	var property metros = 0
+	method text() = metros.toString()
+	method textColor() = "744F3A"
+}
+
+object monedasTiendaEnJuego {
+	var property position = game.at(13,6)
+	method text() = monedasTienda.cantidad().toString()
+	method textColor() = monedasTienda.textColor()
 }
 
 object corazon {
