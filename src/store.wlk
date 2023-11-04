@@ -50,19 +50,11 @@ class Tabla {
 class TablaDeAspecto inherits Tabla {
 	const property aspectoOriginal = auto.image()
 	const property nuevoAspecto
+	var property estadoAspecto = desequipado
 	
 	override method trasComprar() {self.efecto()}
 	
-	override method efecto() {
-		if (tick.position() == self.position().up(1)) {
-			tick.position(game.at(15,10))
-			auto.image(aspectoOriginal)
-		}
-		else {
-			tick.position(self.position().up(1))
-			auto.image(nuevoAspecto)
-		}
-	}
+	override method efecto() {estadoAspecto.efecto(self)}
 }
 
 object noComprado {
@@ -81,6 +73,23 @@ object comprado {
 	method comprar(seleccionado) {seleccionado.trasComprar()}
 	
 	method descripcion() = "comp"
+}
+
+object equipado {
+	method efecto(tabla) {
+		tick.position(game.at(15,10))
+		auto.image(tabla.aspectoOriginal())
+		tabla.estadoAspecto(desequipado)
+	}
+}
+
+object desequipado {
+	method efecto(tabla) {
+		tablasAspecto.forEach{tab => tab.estadoAspecto(self)}
+		tick.position(tabla.position().up(1))
+		auto.image(tabla.nuevoAspecto())
+		tabla.estadoAspecto(equipado)
+	}
 }
 
 const tabla1 = new TablaDeAspecto (
@@ -122,7 +131,9 @@ object tabla6 inherits Tabla (
 	override method efecto() {auto.vidaExtra()}
 }
 
-const tablas = [tabla1, tabla2, tabla3, tabla4, tabla5, tabla6]
+const tablas = tablasAspecto + tablasMejoras
+const tablasAspecto = [tabla1, tabla2, tabla3]
+const tablasMejoras = [tabla4, tabla5, tabla6]
 
 object seleccionador {
 	var property position = game.at(1,4)
@@ -136,21 +147,10 @@ object seleccionador {
 		game.removeVisual(self)
 	}
 
-	method arriba() {
-		if (position.y() < tabla1.position().y()) position = position.up(4)
-	}
-	
-	method abajo() {
-		if (position.y() > tabla6.position().y()) position = position.down(4)
-	}
-	
-	method derecha() {
-		if (position.x() < tabla6.position().x()) position = position.right(4)
-	}
-	
-	method izquierda() {
-		if (position.x() > tabla1.position().x()) position = position.left(4)
-	}
+	method arriba() {if (position.y() < tabla1.position().y()) position = position.up(4)}
+	method abajo() {if (position.y() > tabla6.position().y()) position = position.down(4)}
+	method derecha() {if (position.x() < tabla6.position().x()) position = position.right(4)}
+	method izquierda() {if (position.x() > tabla1.position().x()) position = position.left(4)}
 }
 
 object tick {
