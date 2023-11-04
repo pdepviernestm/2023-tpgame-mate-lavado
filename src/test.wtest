@@ -1,0 +1,113 @@
+import gameplay.*
+import wollok.game.*
+import music.*
+import menu.*
+import store.*
+import objects.*
+import gameplay.*
+import controls.*
+
+describe "Tests de Teclado" {
+	
+	// Controles para Mate
+	const posInicialAuto = auto.position()
+	test "Al tocar las teclas right y left, Mate se mueve hacia los costados" {
+		auto.vidasEnPartida(1)
+		auto.carril(2)
+		juego.right()
+		assert.notEquals(posInicialAuto,auto.position())
+		auto.carril(2)
+		juego.left()
+		assert.notEquals(posInicialAuto,auto.position())
+	}
+	test "Cuando Mate se encuentra en los carriles extremos, no puede salirse de la ruta" {
+		auto.carril(1)
+		juego.left()
+		assert.equals(posInicialAuto,auto.position())
+		auto.carril(3)
+		juego.right()
+		assert.equals(posInicialAuto,auto.position())
+	}
+	
+	// Controles para menú
+	test "Al tocar down, el puntero apunta al botón tienda y, al tocar down de nuevo, a controles" {
+		var loApuntado
+		menu.mostrar()
+        menu.down()
+        loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), tienda)
+        menu.down()
+        loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), controles)
+        menu.ocultar()
+    }
+    test "Al estar en el extremo de arriba, no se puede subir" {
+        const posInicialPuntero = juego
+        menu.mostrar()
+        menu.up()
+        const loApuntado = game.uniqueCollider(puntero)
+        assert.equals(loApuntado.cualEs(), posInicialPuntero)
+        menu.ocultar()
+    }
+	
+	// Controles para tienda
+	test "El seleccionador solo puede apuntar hacia tablas contiguas" {
+		const posInicialSeleccionador = seleccionador.position()
+		tienda.left()
+		assert.equals(posInicialSeleccionador,seleccionador.position())
+		tienda.down()
+		assert.notEquals(posInicialSeleccionador,seleccionador.position())
+	}
+	test "Al seleccionar una tabla de la primera fila, Mate cambia su apariencia" {
+		const imagenInicial = auto.image()
+		var imagenAnterior = auto.image()
+		tienda.mostrar()
+		monedasTienda.agregar(1000)
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
+		tienda.enter()
+		assert.notEquals(imagenAnterior, auto.image())
+		imagenAnterior = auto.image()
+		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
+		tienda.enter()
+		assert.notEquals(imagenAnterior, auto.image())
+		tienda.enter()
+		assert.equals(imagenInicial, auto.image())
+		tienda.ocultar()
+	}
+	test "Al seleccionar una tabla de la segunda fila, Mate obtiene mejoras" {
+		const agilidadInicial = auto.agilidad()
+		const vidas = auto.vidas()
+		const tormentaInicial = tormenta.image()
+		tienda.mostrar()
+		seleccionador.position(tabla1.position())
+		monedasTienda.agregar(1000)
+		
+		tienda.down()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
+		tienda.enter()
+		assert.notEquals(tormenta.image(), tormentaInicial)
+		
+		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
+		tienda.enter()
+		assert.that(agilidadInicial < auto.agilidad())
+		tienda.right()
+		seleccionador.apuntaA(game.uniqueCollider(seleccionador))
+		tienda.enter()
+		assert.that(vidas < auto.vidas())
+	}
+}
+
+
+describe "Tests de Obstáculos" {
+	
+	// Vacas y Barriles
+	test "Al chocarse contra un osbtáculo, Mate pierde una vida" {
+		juego.mostrar()
+		const obstaculo = new Barril()
+		const vidas = auto.vidasEnPartida()	
+		obstaculo.chocar()
+		assert.that(auto.vidasEnPartida() < vidas)
+	}
+} 
